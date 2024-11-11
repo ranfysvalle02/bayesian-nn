@@ -245,3 +245,74 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
+Making prediction before feedback...
+Predicting sentiment for: 'This product is amazing!'
+Prediction before feedback: 0.9446
+Uncertainty: 0.2013
+
+Initial Sentiment Prediction: Positive (Confidence: 0.94)
+Prediction Uncertainty: 0.20
+
+--- Feedback Data ---
+Feedback 1:
+  Text: This product is amazing!
+  Label: Positive
+Feedback 2:
+  Text: Absolutely love it!
+  Label: Positive
+Feedback 3:
+  Text: Fantastic quality and great support.
+  Label: Positive
+Feedback 4:
+  Text: Exceeded my expectations!
+  Label: Positive
+Feedback 5:
+  Text: Will buy again.
+  Label: Positive
+Feedback 6:
+  Text: Highly recommend to everyone.
+  Label: Positive
+Feedback 7:
+  Text: Five stars for sure!
+  Label: Positive
+Feedback 8:
+  Text: Incredible performance!
+  Label: Positive
+Feedback 9:
+  Text: I'm very satisfied.
+  Label: Positive
+Feedback 10:
+  Text: Top-notch service.
+  Label: Positive
+---------------------
+
+Incorporating feedback and retraining the model...
+
+  | Name              | Type    | Params | Mode 
+------------------------------------------------------
+0 | fc1               | Linear  | 5.0 K  | train
+1 | dropout           | Dropout | 0      | train
+2 | fc2               | Linear  | 51     | train
+3 | activation        | ReLU    | 0      | train
+4 | output_activation | Sigmoid | 0      | train
+5 | loss_fn           | BCELoss | 0      | train
+------------------------------------------------------
+5.1 K     Trainable params
+0         Non-trainable params
+5.1 K     Total params
+0.020     Total estimated model params size (MB)
+6         Modules in train mode
+0         Modules in eval mode
+`Trainer.fit` stopped: `max_epochs=10` reached.
+Retraining with feedback completed.
+
+Making prediction after feedback...
+Predicting sentiment for: 'This product is amazing!'
+Prediction after feedback: 0.9443
+Uncertainty: 0.1905
+
+Updated Sentiment Prediction: Positive (Confidence: 0.94)
+Prediction Uncertainty: 0.19
+"""
