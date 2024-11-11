@@ -24,15 +24,7 @@ Enter **Bayesian Neural Networks (BNNs)**. Instead of treating the weights as fi
 
 In Bayesian terms, we update our belief about the weights as we observe more data, much like how our understanding of the world evolves based on new information. This process is governed by **Bayes' Theorem**, a cornerstone of probability theory:
 
-\[
-P(\theta | D) = \frac{P(D | \theta) \cdot P(\theta)}{P(D)}
-\]
-
-Where:
-- \( P(\theta | D) \) is the posterior probability of the weights (\( \theta \)) given the data (\( D \)),
-- \( P(D | \theta) \) is the likelihood of observing the data given the weights,
-- \( P(\theta) \) is the prior belief about the weights, and
-- \( P(D) \) is the marginal likelihood (the normalizing factor).
+![](https://media.geeksforgeeks.org/wp-content/uploads/20240517210301/probablity-(1).png)
 
 Through this probabilistic process, BNNs offer a more holistic way of making predictions — not just an answer, but a **confidence** level, providing insights into how sure (or unsure) the model is about its conclusions.
 
