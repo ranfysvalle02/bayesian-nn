@@ -6,6 +6,16 @@
 
 ### **Demystifying Bayesian Neural Networks: A Probabilistic Approach to Smarter AI**
 
+In traditional neural networks, when we make a prediction, we get a single output. For example, in a binary classification problem, we might get a single probability that a given input belongs to the positive class.
+
+However, in many real-world scenarios, we want to know more than just the most likely prediction. We want to know how certain the model is about its prediction. This is where Bayesian Neural Networks (BNNs) come in.
+
+A BNN, unlike a traditional neural network, doesn't just output a single prediction. Instead, it outputs a distribution of predictions. This is achieved by using dropout during both training and prediction. During prediction, we run the model multiple times (Monte Carlo sampling), each time with a different dropout mask, and collect all the outputs.
+
+The mean of this distribution is the model's prediction, similar to a traditional neural network. However, the spread of the distribution (often measured by standard deviation or variance) gives us a measure of the model's uncertainty about its prediction.
+
+If the model is very certain, all the predictions will be close to the mean, and the spread will be small. If the model is uncertain, the predictions will be spread out over a larger range, and the spread will be large.
+
 ---
 
 ### **Introduction: The Power of Probabilities in AI and Reality**
