@@ -89,14 +89,6 @@ In both cases, uncertainty is not merely a result of a lack of information, but 
 
 ---
 
-### **The Role of Uncertainty in Predictions**
-
-One of the defining features of **BNNs** is their ability to quantify **uncertainty** in predictions. Traditional neural networks output a point estimate — a single prediction based on fixed weights. But this doesn’t tell us how confident the model is in that prediction. For instance, if a neural network predicts a class label with 90% confidence, we don’t know what the remaining 10% uncertainty means — could the model be wrong in that 10% of cases? What happens when the data is sparse or noisy?
-
-**BNNs**, however, provide not just predictions but **probability distributions** over possible outcomes. This is like saying, "I’m 80% sure this is a cat, but I’m 20% unsure, and I might be wrong." This helps the model make more informed decisions, especially in situations of uncertainty. For example, in medical diagnosis, a **BNN** might predict a disease with 90% certainty but also highlight that it’s unsure about certain features of the case. This provides clinicians with actionable insights — when to trust the model, and when to question its findings.
-
----
-
 ### **Atoms, Electrons, and the Uncertainty of Existence**
 
 The probabilistic nature of Bayesian Neural Networks parallels the very **tendencies of particles** in the quantum world. **Atoms** are not rigid structures but exist in fluctuating states, with **electrons** moving in **probabilistic orbits** around the nucleus, described by wavefunctions. Until we measure the electron’s position, it exists in a "cloud" of probabilities, where its location is uncertain, a concept known as the **Heisenberg Uncertainty Principle**.
