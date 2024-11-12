@@ -2,6 +2,8 @@
 
 ---
 
+![](https://paperthatiread.com/wp-content/uploads/2024/01/Gaussian-Processes-10-1024x576.png) 
+
 ### **Demystifying Bayesian Neural Networks: A Probabilistic Approach to Smarter AI**
 
 ---
