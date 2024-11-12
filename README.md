@@ -129,6 +129,8 @@ If the model is very certain, all the predictions will be close to the mean, and
 
 ### **Uncertainty and the Quantum World: A Parallelogram of Possibilities**
 
+![](https://images.squarespace-cdn.com/content/v1/6319c99db102c638f87df067/60fdce92-c22e-4e44-b8fe-2264fd473eb2/qubits-web-37284702_iStock_agsandrew_Home.jpg)
+
 Uncertainty is at the core of both **Bayesian Neural Networks** and **quantum mechanics**. In quantum physics, particles such as **electrons** don’t have fixed positions and velocities until measured. Instead, they exist in a state of **superposition**, where they can be in multiple states at once, each with a certain probability. This is similar to the uncertainty in BNNs, where weights exist in a **probabilistic distribution** rather than a single deterministic value. This probabilistic view mirrors how quantum mechanics works at the atomic level, where reality itself becomes inherently uncertain until observed.
 
 At the heart of quantum mechanics is **wave-particle duality**. Particles, like electrons, can behave both as waves and as discrete particles. When not observed, these particles act like waves, existing in multiple states, spread out over space. Once measured, they "collapse" into a single state, like a particle with a definite location. This dual nature of particles resonates with the way **Bayesian Neural Networks** collapse a range of possible weight distributions into a more definitive prediction. Until the data is observed and processed, there are multiple "possible" configurations of the model’s weights, reflecting the probabilistic nature of both reality and the neural network.
