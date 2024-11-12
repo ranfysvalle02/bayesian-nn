@@ -1,11 +1,21 @@
 import torch
 import torch.nn as nn
 import pytorch_lightning as pl
-from pytorch_lightning.callbacks import TQDMProgressBar
+from pytorch_lightning.callbacks import (
+    TQDMProgressBar,
+    EarlyStopping,
+    LearningRateMonitor
+)
 from torch.optim import Adam
-from torch.utils.data import DataLoader, Dataset, TensorDataset
+from torch.utils.data import DataLoader, Dataset, TensorDataset, random_split, ConcatDataset
 import numpy as np
 import random
+import re
+import nltk
+from nltk.tokenize import word_tokenize
+
+# Download NLTK data
+nltk.download('punkt')
 
 # Set random seeds for reproducibility
 torch.manual_seed(42)
@@ -13,181 +23,513 @@ np.random.seed(42)
 random.seed(42)
 
 # Constants
-INPUT_DIM = 100
-HIDDEN_DIM = 50  # Increased from 10 to 50
+INPUT_DIM = 3000  # 10 tokens * 300-dim embeddings
+HIDDEN_DIM = 128
 OUTPUT_DIM = 1
-DROPOUT_PROB = 0.5  # Increased from 0.1 to 0.5
-NUM_SAMPLES = 1000
+DROPOUT_PROB = 0.5
+NUM_SAMPLES = 2000
 BATCH_SIZE = 32
-LEARNING_RATE = 0.01
-EPOCHS = 10
+LEARNING_RATE = 0.001
+EPOCHS = 30
 MC_SAMPLES = 100  # Number of Monte Carlo samples for uncertainty
 
-# Synthetic Text Dataset Generation
+# Load GloVe embeddings
+def load_glove_embeddings(glove_file_path='glove.6B.300d.txt'):
+    """
+    Loads GloVe embeddings from a file.
+
+    Args:
+        glove_file_path (str): Path to the GloVe embeddings file.
+
+    Returns:
+        dict: A dictionary mapping words to their embedding tensors.
+    """
+    embeddings = {}
+    try:
+        with open(glove_file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                values = line.strip().split()
+                word = values[0]
+                vector = torch.tensor([float(val) for val in values[1:]], dtype=torch.float32)
+                embeddings[word] = vector
+        print("GloVe embeddings successfully loaded.")
+    except FileNotFoundError:
+        print(f"Error: The GloVe file '{glove_file_path}' was not found.")
+        print("Please download it from https://nlp.stanford.edu/projects/glove/ and place it in the current directory.")
+        exit(1)
+    return embeddings
+
+# Synthetic Text Dataset Generation with Enhanced Diversity
 class SentimentDataset(Dataset):
-    """A synthetic dataset for sentiment analysis."""
+    """
+    A synthetic dataset for sentiment analysis with diverse sentences.
+    """
 
-    def __init__(self, num_samples=1000):
-        self.texts = [
-            "I love this product!" if i % 2 == 0 else "This is terrible."
-            for i in range(num_samples)
+    def __init__(self, num_samples=1000, embeddings=None):
+        """
+        Initializes the dataset with positive and negative sentences.
+
+        Args:
+            num_samples (int): Number of samples in the dataset.
+            embeddings (dict): A dictionary mapping words to their embedding tensors.
+        """
+        self.embeddings = embeddings if embeddings else {}
+        self.positive_sentences = [
+            "I love this product!",
+            "Absolutely fantastic experience.",
+            "Highly recommend to everyone.",
+            "Exceeded my expectations.",
+            "Will buy again.",
+            "Five stars for sure!",
+            "Incredible performance!",
+            "I'm very satisfied.",
+            "Top-notch service.",
+            "Amazing quality and support."
         ]
-        self.labels = [1 if i % 2 == 0 else 0 for i in range(num_samples)]
-        self.tokenizer = self.char_tokenizer
-
-    @staticmethod
-    def char_tokenizer(text):
-        """Simple character-based tokenizer converting characters to ASCII codes."""
-        return [ord(char) for char in text]
+        self.negative_sentences = [
+            "This is terrible.",
+            "Absolutely horrible experience.",
+            "Do not recommend to anyone.",
+            "Failed to meet my expectations.",
+            "Will never buy again.",
+            "One star is too much.",
+            "Incredible disappointment!",
+            "I'm very dissatisfied.",
+            "Poor service and quality.",
+            "Worst product ever."
+        ]
+        # Generate samples
+        self.texts = []
+        self.labels = []
+        for i in range(num_samples):
+            if i % 2 == 0:
+                sentence = random.choice(self.positive_sentences)
+                label = 1
+            else:
+                sentence = random.choice(self.negative_sentences)
+                label = 0
+            self.texts.append(sentence)
+            self.labels.append(label)
 
     def __len__(self):
         return len(self.texts)
 
     def __getitem__(self, idx):
+        """
+        Retrieves the tokenized and embedded representation of a sentence along with its label.
+
+        Args:
+            idx (int): Index of the sample.
+
+        Returns:
+            tuple: (input_vector, label)
+        """
         text = self.texts[idx]
         label = self.labels[idx]
-        tokenized_text = self.tokenizer(text)
-        return torch.tensor(tokenized_text, dtype=torch.float32), torch.tensor(label, dtype=torch.float32)
+        tokenized_text = self.tokenize(text)
+        return tokenized_text, torch.tensor(label, dtype=torch.float32)
 
-def collate_fn(batch, max_length=INPUT_DIM):
-    """
-    Pads or truncates text sequences to a fixed length.
+    def tokenize(self, text):
+        """
+        Cleans, tokenizes, and maps a sentence to its GloVe embeddings.
 
-    Args:
-        batch: A list of tuples (tokenized_text, label).
-        max_length: The fixed length to pad/truncate the sequences.
+        Args:
+            text (str): The input sentence.
 
-    Returns:
-        Padded texts tensor and labels tensor.
-    """
-    texts, labels = zip(*batch)
-    padded_texts = []
-    for text in texts:
-        if len(text) < max_length:
-            padded = torch.cat([text, torch.zeros(max_length - len(text))])
+        Returns:
+            torch.Tensor: A flattened tensor of concatenated embeddings.
+        """
+        # Remove punctuation and lowercase
+        text = re.sub(r'[^\w\s]', '', text.lower())
+        tokens = word_tokenize(text)
+        embeddings_list = []
+        for token in tokens:
+            if token in self.embeddings:
+                embeddings_list.append(self.embeddings[token])
+            else:
+                print(f"Token '{token}' not found in embeddings. Assigning zero vector.")
+                embeddings_list.append(torch.zeros(300))
+        # Pad or truncate to fixed length (10 tokens)
+        max_tokens = 10
+        if len(embeddings_list) < max_tokens:
+            embeddings_list += [torch.zeros(300) for _ in range(max_tokens - len(embeddings_list))]
         else:
-            padded = text[:max_length]
-        padded_texts.append(padded)
-    return torch.stack(padded_texts), torch.tensor(labels, dtype=torch.float32)
+            embeddings_list = embeddings_list[:max_tokens]
+        # Stack into tensor and flatten
+        return torch.stack(embeddings_list).view(-1)  # Shape: (3000,)
+
+# Define a LightningDataModule for better data handling
+class SentimentDataModule(pl.LightningDataModule):
+    """
+    PyTorch Lightning DataModule for handling sentiment analysis data.
+    """
+
+    def __init__(self, batch_size=BATCH_SIZE, num_samples=NUM_SAMPLES, input_dim=INPUT_DIM, embeddings=None):
+        """
+        Initializes the DataModule with batch size, number of samples, and embeddings.
+
+        Args:
+            batch_size (int): Number of samples per batch.
+            num_samples (int): Number of samples in the dataset.
+            input_dim (int): Dimension of the input vectors.
+            embeddings (dict): A dictionary mapping words to their embedding tensors.
+        """
+        super().__init__()
+        self.batch_size = batch_size
+        self.num_samples = num_samples
+        self.input_dim = input_dim
+        self.embeddings = embeddings
+        self.train_dataset = None
+        self.val_dataset = None
+
+    def prepare_data(self):
+        """
+        Prepares data by loading embeddings.
+        """
+        if not self.embeddings:
+            self.embeddings = load_glove_embeddings()
+
+    def setup(self, stage=None):
+        """
+        Sets up the dataset by creating training and validation splits.
+        """
+        if self.train_dataset is not None and self.val_dataset is not None:
+            # Datasets are already set, do not reset them
+            return
+        dataset = SentimentDataset(num_samples=self.num_samples, embeddings=self.embeddings)
+        # Split into train and validation
+        train_size = int(0.8 * len(dataset))
+        val_size = len(dataset) - train_size
+        self.train_dataset, self.val_dataset = random_split(dataset, [train_size, val_size])
+
+    def collate_fn(self, batch):
+        """
+        Custom collate function to stack inputs and labels.
+
+        Args:
+            batch (list): List of tuples (input_vector, label).
+
+        Returns:
+            tuple: (stacked_inputs, stacked_labels)
+        """
+        x, y = zip(*batch)
+        x = torch.stack(x)
+        y = torch.stack(y)
+        return x, y
+
+    def train_dataloader(self):
+        """
+        Returns the training DataLoader.
+
+        Returns:
+            DataLoader: Training DataLoader.
+        """
+        return DataLoader(
+            self.train_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            collate_fn=self.collate_fn
+        )
+
+    def val_dataloader(self):
+        """
+        Returns the validation DataLoader.
+
+        Returns:
+            DataLoader: Validation DataLoader.
+        """
+        return DataLoader(
+            self.val_dataset,
+            batch_size=self.batch_size,
+            shuffle=False,
+            collate_fn=self.collate_fn
+        )
+
+    def add_feedback(self, feedback_texts, feedback_labels):
+        """
+        Incorporates feedback data into the training dataset.
+
+        Args:
+            feedback_texts (list): List of feedback text strings.
+            feedback_labels (list): List of feedback labels (0 or 1).
+        """
+        assert len(feedback_texts) == len(feedback_labels), "Feedback texts and labels must be the same length."
+        print("\n--- Incorporating Feedback Data ---")
+        for i, (text, label) in enumerate(zip(feedback_texts, feedback_labels)):
+            print(f"Feedback {i+1}: Text - \"{text}\", Label - {'Positive' if label == 1 else 'Negative'}")
+        print("------------------------------------\n")
+
+        # Tokenize feedback data
+        tokenized_feedback = []
+        for text in feedback_texts:
+            # Clean and tokenize
+            cleaned_text = re.sub(r'[^\w\s]', '', text.lower())
+            tokens = word_tokenize(cleaned_text)
+            embeddings_list = []
+            for token in tokens:
+                if token in self.embeddings:
+                    embeddings_list.append(self.embeddings[token])
+                else:
+                    print(f"Feedback Token '{token}' not found in embeddings. Assigning zero vector.")
+                    embeddings_list.append(torch.zeros(300))
+            # Pad or truncate
+            max_tokens = 10
+            if len(embeddings_list) < max_tokens:
+                embeddings_list += [torch.zeros(300) for _ in range(max_tokens - len(embeddings_list))]
+            else:
+                embeddings_list = embeddings_list[:max_tokens]
+            # Stack and flatten
+            tokenized = torch.stack(embeddings_list).view(-1)
+            tokenized_feedback.append(tokenized)
+
+        # Convert to tensors
+        x_feedback = torch.stack(tokenized_feedback)
+        y_feedback = torch.tensor(feedback_labels, dtype=torch.float32)
+
+        # Create a TensorDataset for feedback
+        feedback_tensor_dataset = TensorDataset(x_feedback, y_feedback)
+
+        # Concatenate feedback with existing training data
+        self.train_dataset = ConcatDataset([self.train_dataset, feedback_tensor_dataset])
+        print(f"Training dataset size after adding feedback: {len(self.train_dataset)} samples.\n")
 
 # Bayesian Neural Network using Monte Carlo Dropout
 class BayesianNN(pl.LightningModule):
-    """A simple Bayesian Neural Network for binary classification."""
+    """
+    A Bayesian Neural Network for binary sentiment classification using Monte Carlo Dropout.
+    """
 
-    def __init__(self, input_dim=INPUT_DIM, hidden_dim=HIDDEN_DIM, output_dim=OUTPUT_DIM, p=DROPOUT_PROB):
+    def __init__(self, input_dim=INPUT_DIM, hidden_dim=HIDDEN_DIM, output_dim=OUTPUT_DIM, p=DROPOUT_PROB, lr=LEARNING_RATE):
+        """
+        Initializes the Bayesian Neural Network with specified architecture.
+
+        Args:
+            input_dim (int): Dimension of input features.
+            hidden_dim (int): Number of neurons in hidden layers.
+            output_dim (int): Dimension of the output layer.
+            p (float): Dropout probability.
+            lr (float): Learning rate.
+        """
         super(BayesianNN, self).__init__()
         self.save_hyperparameters()
         self.fc1 = nn.Linear(input_dim, hidden_dim)
-        self.dropout = nn.Dropout(p)
-        self.fc2 = nn.Linear(hidden_dim, output_dim)
+        self.dropout1 = nn.Dropout(p)
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+        self.dropout2 = nn.Dropout(p)
+        self.fc3 = nn.Linear(hidden_dim, output_dim)
         self.activation = nn.ReLU()
-        self.output_activation = nn.Sigmoid()
-        self.loss_fn = nn.BCELoss()
+        self.loss_fn = nn.BCEWithLogitsLoss()
 
     def forward(self, x):
-        """Forward pass through the network."""
+        """
+        Defines the forward pass through the network.
+
+        Args:
+            x (torch.Tensor): Input tensor.
+
+        Returns:
+            torch.Tensor: Output logits.
+        """
         x = self.fc1(x)
         x = self.activation(x)
-        x = self.dropout(x)
+        x = self.dropout1(x)
         x = self.fc2(x)
-        x = self.output_activation(x)
+        x = self.activation(x)
+        x = self.dropout2(x)
+        x = self.fc3(x)
         return x
 
     def training_step(self, batch, batch_idx):
-        """Defines the training step."""
+        """
+        Defines the training step.
+
+        Args:
+            batch (tuple): Batch of data (inputs, labels).
+            batch_idx (int): Index of the batch.
+
+        Returns:
+            torch.Tensor: Training loss.
+        """
         x, y = batch
-        y_pred = self(x).squeeze()
-        loss = self.loss_fn(y_pred, y)
-        self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
+        logits = self(x).squeeze()
+        loss = self.loss_fn(logits, y)
+        preds = torch.sigmoid(logits)
+        acc = ((preds >= 0.5) == y.byte()).float().mean()
+        self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log('train_acc', acc, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
+    def validation_step(self, batch, batch_idx):
+        """
+        Defines the validation step.
+
+        Args:
+            batch (tuple): Batch of data (inputs, labels).
+            batch_idx (int): Index of the batch.
+        """
+        x, y = batch
+        logits = self(x).squeeze()
+        loss = self.loss_fn(logits, y)
+        preds = torch.sigmoid(logits)
+        acc = ((preds >= 0.5) == y.byte()).float().mean()
+        self.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val_acc', acc, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+
     def configure_optimizers(self):
-        """Configures the optimizer."""
-        optimizer = Adam(self.parameters(), lr=LEARNING_RATE)
-        return optimizer
+        """
+        Configures the optimizer and learning rate scheduler.
 
-def make_prediction(model, x, text, num_samples=MC_SAMPLES):
-    """
-    Makes predictions using Monte Carlo Dropout to estimate uncertainty.
+        Returns:
+            dict: Dictionary containing optimizer and scheduler.
+        """
+        optimizer = Adam(self.parameters(), lr=self.hparams.lr)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode='min',
+            patience=3,
+            factor=0.5,
+            verbose=True
+        )
+        return {
+            'optimizer': optimizer,
+            'lr_scheduler': scheduler,
+            'monitor': 'val_loss'
+        }
 
-    Args:
-        model: The trained BayesianNN model.
-        x: Input tensor.
-        text: The text being predicted (for print statements).
-        num_samples: Number of forward passes to perform.
+    def predict_sentiment(self, x, num_samples=MC_SAMPLES):
+        """
+        Makes predictions using Monte Carlo Dropout to estimate uncertainty.
 
-    Returns:
-        Mean prediction and uncertainty (standard deviation).
-    """
-    model.train()  # Enable dropout
-    predictions = []
-    print(f"Predicting sentiment for: '{text}'")
-    with torch.no_grad():
-        for i in range(num_samples):
-            pred = model(x)
-            predictions.append(pred)
-    predictions = torch.stack(predictions)
-    mean_prediction = torch.mean(predictions, dim=0)
-    uncertainty = torch.std(predictions, dim=0)
-    return mean_prediction, uncertainty
+        Args:
+            x (torch.Tensor): Input tensor.
+            num_samples (int): Number of forward passes to perform.
+
+        Returns:
+            tuple: (mean_predictions, uncertainties)
+        """
+        self.train()  # Enable dropout
+        predictions = []
+        with torch.no_grad():
+            for _ in range(num_samples):
+                logits = self(x)
+                preds = torch.sigmoid(logits)
+                predictions.append(preds)
+        predictions = torch.stack(predictions)  # Shape: (MC_SAMPLES, batch_size, 1)
+        mean_prediction = torch.mean(predictions, dim=0)
+        uncertainty = torch.std(predictions, dim=0)
+        self.eval()  # Set back to eval mode
+        return mean_prediction, uncertainty
 
 def main():
-    """Main function to execute the training, prediction, and feedback process."""
+    """
+    Main function to execute the training, prediction, and feedback process.
+    """
+    # Load GloVe embeddings
+    print("Loading GloVe embeddings...")
+    embeddings = load_glove_embeddings('glove.6B.300d.txt')  # Ensure this file is in the current directory
+    print("GloVe embeddings loaded.\n")
 
-    # Generate synthetic dataset
-    dataset = SentimentDataset(num_samples=NUM_SAMPLES)
-    dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, collate_fn=collate_fn)
+    # Initialize DataModule
+    data_module = SentimentDataModule(embeddings=embeddings)
+    data_module.setup()
 
     # Display sample data from the dataset
     print("\n--- Sample Data from SentimentDataset ---")
+    # Accessing the original dataset
+    original_dataset = data_module.train_dataset.dataset
     for i in range(3):
-        sample_text = dataset.texts[i]
-        sample_label = dataset.labels[i]
+        sample_text = original_dataset.texts[i]
+        sample_label = original_dataset.labels[i]
         print(f"Sample {i+1}:")
         print(f"  Text: {sample_text}")
         print(f"  Label: {'Positive' if sample_label == 1 else 'Negative'}")
     print("------------------------------------------\n")
 
     # Initialize and train the model
-    model = BayesianNN(input_dim=INPUT_DIM)
+    model = BayesianNN()
 
-    # Use the updated TQDMProgressBar callback to set refresh rate
-    progress_bar = TQDMProgressBar(refresh_rate=20)  # Set your desired refresh rate here
+    # Define callbacks
+    progress_bar = TQDMProgressBar(refresh_rate=20)
+    early_stop_callback = EarlyStopping(
+        monitor='val_loss',
+        min_delta=0.00,
+        patience=5,
+        verbose=True,
+        mode='min'
+    )
+    lr_monitor = LearningRateMonitor(logging_interval='epoch')
+
+    # Initialize Trainer
     trainer = pl.Trainer(
         max_epochs=EPOCHS,
-        logger=False,
+        logger=True,  # Enable logger (TensorBoard)
         enable_checkpointing=False,
-        callbacks=[progress_bar]
+        callbacks=[progress_bar, early_stop_callback, lr_monitor],
+        deterministic=True,  # For reproducibility
+        log_every_n_steps=10  # Adjust as needed
     )
 
-    print("Starting training...")
-    trainer.fit(model, dataloader)
-    print("Training completed.\n")
+    print("Starting initial training...")
+    trainer.fit(model, datamodule=data_module)
+    print("Initial training completed.\n")
 
-    # Prepare test input
-    test_text = "This product is amazing!"
-    print("--- Test Input ---")
-    print(f"Text: {test_text}")
-    x_test = torch.tensor([ord(char) for char in test_text], dtype=torch.float32)
-    if len(x_test) < INPUT_DIM:
-        x_test = torch.cat([x_test, torch.zeros(INPUT_DIM - len(x_test))])
-    else:
-        x_test = x_test[:INPUT_DIM]
-    print(f"Tokenized and padded input: {x_test}\n")
-    print("-------------------\n")
+    # Prepare multiple test inputs
+    test_texts = [
+        "This product is amazing!",
+        "I hate this item.",
+        "It's okay, not great.",
+        "Absolutely fantastic experience.",
+        "Very disappointed with the product.",
+        "Exceeded my expectations!",
+        "Terrible customer service.",
+        "I love it!",
+        "Worst purchase ever.",
+        "Highly recommend to everyone.",
+        "Not worth the price.",
+        "I'm very satisfied."
+    ]
 
-    # Make a prediction before feedback
-    print("Making prediction before feedback...")
-    mean_pred, uncertainty = make_prediction(model, x_test.unsqueeze(0), test_text)
-    print(f"Prediction before feedback: {mean_pred.item():.4f}")
-    print(f"Uncertainty: {uncertainty.item():.4f}\n")
+    # Tokenize and pad test inputs
+    tokenized_tests = []
+    for text in test_texts:
+        # Clean and tokenize
+        cleaned_text = re.sub(r'[^\w\s]', '', text.lower())
+        tokens = word_tokenize(cleaned_text)
+        embeddings_list = []
+        for token in tokens:
+            if token in embeddings:
+                embeddings_list.append(embeddings[token])
+            else:
+                print(f"Test Token '{token}' not found in embeddings. Assigning zero vector.")
+                embeddings_list.append(torch.zeros(300))
+        # Pad or truncate
+        max_tokens = 10
+        if len(embeddings_list) < max_tokens:
+            embeddings_list += [torch.zeros(300) for _ in range(max_tokens - len(embeddings_list))]
+        else:
+            embeddings_list = embeddings_list[:max_tokens]
+        # Stack and flatten
+        tokenized = torch.stack(embeddings_list).view(-1)
+        tokenized_tests.append(tokenized)
+    x_tests = torch.stack(tokenized_tests)
 
-    # Display initial prediction
-    sentiment_before = "Positive" if mean_pred.item() >= 0.5 else "Negative"
-    print(f"Initial Sentiment Prediction: {sentiment_before} (Confidence: {mean_pred.item():.2f})")
-    print(f"Prediction Uncertainty: {uncertainty.item():.2f}\n")
+    # Make predictions before feedback
+    print("--- Predictions Before Feedback ---")
+    model.eval()
+    mean_preds, uncertainties = model.predict_sentiment(x_tests)
+    for i, text in enumerate(test_texts):
+        pred = mean_preds[i].item()
+        uncertainty = uncertainties[i].item()
+        sentiment = "Positive" if pred >= 0.5 else "Negative"
+        print(f"Text: \"{text}\"")
+        print(f"  Prediction: {pred:.4f} ({sentiment})")
+        print(f"  Uncertainty: {uncertainty:.4f}\n")
+    print("------------------------------------\n")
 
-    # Feedback - retrain with additional positive data
+    # Set the model back to train mode
+    model.train()
+
+    # Feedback - retrain with additional diverse data (balanced)
     feedback_texts = [
         "This product is amazing!",
         "Absolutely love it!",
@@ -198,9 +540,19 @@ def main():
         "Five stars for sure!",
         "Incredible performance!",
         "I'm very satisfied.",
-        "Top-notch service."
+        "Top-notch service.",
+        "Not worth the price.",
+        "Very disappointed with the product.",
+        "Terrible customer service.",
+        "I hate this item.",
+        "Worst purchase ever.",
+        "It's okay, could be better.",
+        "I feel neutral about this.",
+        "Nothing special, just average.",
+        "Mediocre performance.",
+        "Couldn’t be happier with this."
     ]
-    feedback_labels = [1] * len(feedback_texts)  # All positive labels
+    feedback_labels = [1]*10 + [0]*10  # 10 positive and 10 negative
 
     print("--- Feedback Data ---")
     for i, text in enumerate(feedback_texts):
@@ -209,110 +561,40 @@ def main():
         print(f"  Label: {'Positive' if feedback_labels[i] == 1 else 'Negative'}")
     print("---------------------\n")
 
-    # Tokenize and pad feedback data
-    x_feedback = [torch.tensor([ord(char) for char in text], dtype=torch.float32) for text in feedback_texts]
-    x_feedback = [
-        torch.cat([x, torch.zeros(INPUT_DIM - len(x))]) if len(x) < INPUT_DIM else x[:INPUT_DIM]
-        for x in x_feedback
-    ]
-    y_feedback = torch.tensor(feedback_labels, dtype=torch.float32)
-    feedback_dataset = TensorDataset(torch.stack(x_feedback), y_feedback)
-    feedback_dataloader = DataLoader(
-        feedback_dataset,
-        batch_size=2,
-        shuffle=True,
-        collate_fn=lambda batch: (
-            torch.stack([item[0] for item in batch]),
-            torch.stack([item[1] for item in batch])
-        )
-    )
+    # Incorporate feedback data into the DataModule
+    data_module.add_feedback(feedback_texts, feedback_labels)
 
     # Retrain the model with feedback data
     print("Incorporating feedback and retraining the model...")
-    trainer.fit(model, feedback_dataloader)
+
+    # Create a new Trainer instance for retraining
+    trainer = pl.Trainer(
+        max_epochs=EPOCHS,
+        logger=True,  # Enable logger (TensorBoard)
+        enable_checkpointing=False,
+        callbacks=[progress_bar, early_stop_callback, lr_monitor],
+        deterministic=True,  # For reproducibility
+        log_every_n_steps=10  # Adjust as needed
+    )
+
+    trainer.fit(model, datamodule=data_module)
     print("Retraining with feedback completed.\n")
 
-    # Make a prediction after feedback
-    print("Making prediction after feedback...")
-    mean_pred_after, uncertainty_after = make_prediction(model, x_test.unsqueeze(0), test_text)
-    print(f"Prediction after feedback: {mean_pred_after.item():.4f}")
-    print(f"Uncertainty: {uncertainty_after.item():.4f}\n")
+    # Make predictions after feedback
+    print("--- Predictions After Feedback ---")
+    model.eval()
+    mean_preds_after, uncertainties_after = model.predict_sentiment(x_tests)
+    for i, text in enumerate(test_texts):
+        pred = mean_preds_after[i].item()
+        uncertainty = uncertainties_after[i].item()
+        sentiment = "Positive" if pred >= 0.5 else "Negative"
+        print(f"Text: \"{text}\"")
+        print(f"  Prediction: {pred:.4f} ({sentiment})")
+        print(f"  Uncertainty: {uncertainty:.4f}\n")
+    print("-----------------------------------\n")
 
-    # Display updated prediction
-    sentiment_after = "Positive" if mean_pred_after.item() >= 0.5 else "Negative"
-    print(f"Updated Sentiment Prediction: {sentiment_after} (Confidence: {mean_pred_after.item():.2f})")
-    print(f"Prediction Uncertainty: {uncertainty_after.item():.2f}\n")
+    # Optional: Save the model
+    # torch.save(model.state_dict(), 'bayesian_nn_sentiment.pth')
 
 if __name__ == "__main__":
     main()
-
-"""
-Making prediction before feedback...
-Predicting sentiment for: 'This product is amazing!'
-Prediction before feedback: 0.9446
-Uncertainty: 0.2013
-
-Initial Sentiment Prediction: Positive (Confidence: 0.94)
-Prediction Uncertainty: 0.20
-
---- Feedback Data ---
-Feedback 1:
-  Text: This product is amazing!
-  Label: Positive
-Feedback 2:
-  Text: Absolutely love it!
-  Label: Positive
-Feedback 3:
-  Text: Fantastic quality and great support.
-  Label: Positive
-Feedback 4:
-  Text: Exceeded my expectations!
-  Label: Positive
-Feedback 5:
-  Text: Will buy again.
-  Label: Positive
-Feedback 6:
-  Text: Highly recommend to everyone.
-  Label: Positive
-Feedback 7:
-  Text: Five stars for sure!
-  Label: Positive
-Feedback 8:
-  Text: Incredible performance!
-  Label: Positive
-Feedback 9:
-  Text: I'm very satisfied.
-  Label: Positive
-Feedback 10:
-  Text: Top-notch service.
-  Label: Positive
----------------------
-
-Incorporating feedback and retraining the model...
-
-  | Name              | Type    | Params | Mode 
-------------------------------------------------------
-0 | fc1               | Linear  | 5.0 K  | train
-1 | dropout           | Dropout | 0      | train
-2 | fc2               | Linear  | 51     | train
-3 | activation        | ReLU    | 0      | train
-4 | output_activation | Sigmoid | 0      | train
-5 | loss_fn           | BCELoss | 0      | train
-------------------------------------------------------
-5.1 K     Trainable params
-0         Non-trainable params
-5.1 K     Total params
-0.020     Total estimated model params size (MB)
-6         Modules in train mode
-0         Modules in eval mode
-`Trainer.fit` stopped: `max_epochs=10` reached.
-Retraining with feedback completed.
-
-Making prediction after feedback...
-Predicting sentiment for: 'This product is amazing!'
-Prediction after feedback: 0.9443
-Uncertainty: 0.1905
-
-Updated Sentiment Prediction: Positive (Confidence: 0.94)
-Prediction Uncertainty: 0.19
-"""
