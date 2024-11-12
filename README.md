@@ -1,91 +1,108 @@
+# bayesian-nn
+
+---
+
+![](https://nyk510.github.io/bayesian-neural-network/sample_figures/hidden=512_relu_dropout.gif)
+
 ### **Demystifying Bayesian Neural Networks: A Probabilistic Approach to Smarter AI**
 
----
+In traditional neural networks, when we make a prediction, we get a single output. For example, in a binary classification problem, we might get a single probability that a given input belongs to the positive class.
 
-![BNN Visualization](https://nyk510.github.io/bayesian-neural-network/sample_figures/hidden=512_relu_dropout.gif)
+However, in many real-world scenarios, we want to know more than just the most likely prediction. We want to know how certain the model is about its prediction. This is where Bayesian Neural Networks (BNNs) come in.
 
----
+A BNN, unlike a traditional neural network, doesn't just output a single prediction. Instead, it outputs a distribution of predictions. This is achieved by using dropout during both training and prediction. During prediction, we run the model multiple times (Monte Carlo sampling), each time with a different dropout mask, and collect all the outputs.
 
-### **Introduction: Embracing Uncertainty in AI and the Universe**
+The mean of this distribution is the model's prediction, similar to a traditional neural network. However, the spread of the distribution (often measured by standard deviation or variance) gives us a measure of the model's uncertainty about its prediction.
 
-Artificial intelligence (AI) is transforming our world, from self-driving cars to advanced language models. **Bayesian Neural Networks (BNNs)** are at the cutting edge of making AI more intelligent, interpretable, and reliable by incorporating uncertainty into their predictions. Traditional neural networks have revolutionized many industries, but their inability to model uncertainty can lead to overconfident and potentially erroneous decisions, especially in complex and unpredictable environments.
+If the model is very certain, all the predictions will be close to the mean, and the spread will be small. If the model is uncertain, the predictions will be spread out over a larger range, and the spread will be large.
 
-BNNs address this limitation by treating model parameters probabilistically, allowing the network to express uncertainty about its predictions. Interestingly, this probabilistic approach mirrors the fundamental principles of **quantum mechanics**, where particles exist in states of superposition and uncertainty until observed.
-
-In this post, we'll delve into **Bayesian Neural Networks**, how they model uncertainty, and explore the intriguing connections between these AI models and concepts from **quantum mechanics**.
+In the quantum world, particles exist in a state of superposition, embodying multiple possibilities at once until observed. Similarly, in the world of BNNs, the model's weights aren't fixed but exist in a state of probabilistic flux, representing a multitude of potential realities. 
 
 ---
 
-### **Bayesian Neural Networks: Merging Probability with Deep Learning**
+### **Introduction: The Power of Probabilities in AI and Reality**
 
-#### **Understanding the Limitations of Traditional Neural Networks**
+Artificial intelligence (AI) is reshaping our world, from self-driving cars to natural language processing, and **Bayesian Neural Networks (BNNs)** are at the forefront of making AI smarter, more interpretable, and more reliable. Traditional neural networks have transformed numerous industries, but their inability to model uncertainty leaves them vulnerable to poor decision-making, especially in complex, unpredictable environments.
 
-Traditional neural networks learn deterministic weights during training, providing point estimates for predictions. While effective in many applications, they lack a mechanism to quantify uncertainty, which is crucial in domains where the cost of errors is high (e.g., medical diagnosis, autonomous driving).
+Bayesian Neural Networks step in to fill this gap. These probabilistic models go beyond deterministic weights and values, embracing uncertainty as a central component of intelligence. But what if I told you that the concept of uncertainty isn’t just fundamental to AI, but to the very nature of reality itself? At the atomic level, particles behave probabilistically, existing in states of superposition, uncertainty, and probability. Waves and particles, once thought to be opposites, merge into a unified whole through quantum mechanics. What if the way AI handles uncertainty echoes the very principles of the universe?
 
-#### **Introducing Bayesian Neural Networks**
-
-**Bayesian Neural Networks** overcome this limitation by treating the network's weights as random variables with associated probability distributions. Instead of learning fixed weights, BNNs learn distributions over weights, capturing the uncertainty in the model parameters. This approach enables BNNs to provide not just predictions but also uncertainty estimates, which can be invaluable for decision-making processes.
-
-**Bayes' Theorem** is the foundation of Bayesian inference, allowing us to update our beliefs about the model parameters based on observed data:
-
-\[
-P(\theta | D) = \frac{P(D | \theta) P(\theta)}{P(D)}
-\]
-
-- \( P(\theta | D) \): Posterior distribution of the parameters given data.
-- \( P(D | \theta) \): Likelihood of the data given the parameters.
-- \( P(\theta) \): Prior distribution of the parameters.
-- \( P(D) \): Evidence (marginal likelihood of the data).
-
-By applying Bayes' Theorem, BNNs update the prior beliefs about the weights to posterior distributions after observing data.
-
-#### **Modeling Uncertainty**
-
-BNNs capture two types of uncertainty:
-
-1. **Epistemic Uncertainty (Model Uncertainty):** Arises from limited data and represents uncertainty in the model parameters. This uncertainty can be reduced by collecting more data.
-
-2. **Aleatoric Uncertainty (Data Uncertainty):** Arises from inherent noise in the data and cannot be reduced by gathering more data.
-
-By modeling weight distributions, BNNs primarily capture epistemic uncertainty, allowing the model to express uncertainty in regions where data is sparse or the model is unsure.
+In this post, we’ll dive deep into **Bayesian Neural Networks**, how they incorporate uncertainty in decision-making, and explore the fascinating connection between these AI models and the fundamental principles of **quantum mechanics**, such as **superposition**, **wave-particle duality**, and the **probabilistic nature of existence** itself.
 
 ---
 
-### **Connecting BNNs to Quantum Mechanics**
+### **Bayesian Neural Networks: Where Probability Meets Intelligence**
 
-#### **Superposition and Uncertainty**
+Let’s start with the basics. Traditional neural networks are trained by adjusting the weights of connections between neurons, with each weight representing the strength of influence between two neurons. Once trained, these weights are fixed, and the network uses them to make predictions. This approach, while effective, fails to account for uncertainty in the real world. What if the data is noisy? What if the model faces unfamiliar situations? Traditional neural networks may struggle to provide reliable predictions when faced with uncertainty.
 
-In quantum mechanics, particles like electrons exist in a state of **superposition**, embodying multiple states simultaneously until measured. This intrinsic uncertainty is described by a probability distribution, encapsulated in the particle's wavefunction.
+Enter **Bayesian Neural Networks (BNNs)**. Instead of treating the weights as fixed values, BNNs treat the weights as **probability distributions**. This allows the network to represent uncertainty about what the optimal weights might be. In essence, instead of learning a single set of weights, the model learns a distribution over many possible weights, each with varying degrees of confidence. This probabilistic approach allows the model to account for uncertainty in both the data and the environment, leading to more reliable, informed predictions.
 
-Similarly, BNNs maintain a superposition of possible weight values, represented by probability distributions. Until we observe data (akin to measuring a quantum system), the weights exist in multiple potential states.
+In Bayesian terms, we update our belief about the weights as we observe more data, much like how our understanding of the world evolves based on new information. This process is governed by **Bayes' Theorem**, a cornerstone of probability theory:
 
-#### **Wave-Particle Duality and Model Predictions**
+![](https://media.geeksforgeeks.org/wp-content/uploads/20240517210301/probablity-(1).png)
 
-**Wave-particle duality** posits that particles exhibit both wave-like and particle-like properties. In BNNs, the probabilistic weights (wave-like behavior) result in a range of possible outputs, which collapse to a point estimate (particle-like behavior) when making a prediction.
+Through this probabilistic process, BNNs offer a more holistic way of making predictions — not just an answer, but a **confidence** level, providing insights into how sure (or unsure) the model is about its conclusions.
 
-#### **Heisenberg's Uncertainty Principle and Parameter Estimation**
+---
 
-Heisenberg's Uncertainty Principle states that certain pairs of physical properties (e.g., position and momentum) cannot be simultaneously known to arbitrary precision. In BNNs, there's a trade-off between our knowledge of the weights and the model's capacity to generalize. Overfitting to data reduces uncertainty in weights but may harm generalization to new data.
+### **Uncertainty and the Quantum World: A Parallelogram of Possibilities**
+
+Uncertainty is at the core of both **Bayesian Neural Networks** and **quantum mechanics**. In quantum physics, particles such as **electrons** don’t have fixed positions and velocities until measured. Instead, they exist in a state of **superposition**, where they can be in multiple states at once, each with a certain probability. This is similar to the uncertainty in BNNs, where weights exist in a **probabilistic distribution** rather than a single deterministic value. This probabilistic view mirrors how quantum mechanics works at the atomic level, where reality itself becomes inherently uncertain until observed.
+
+At the heart of quantum mechanics is **wave-particle duality**. Particles, like electrons, can behave both as waves and as discrete particles. When not observed, these particles act like waves, existing in multiple states, spread out over space. Once measured, they "collapse" into a single state, like a particle with a definite location. This dual nature of particles resonates with the way **Bayesian Neural Networks** collapse a range of possible weight distributions into a more definitive prediction. Until the data is observed and processed, there are multiple "possible" configurations of the model’s weights, reflecting the probabilistic nature of both reality and the neural network.
+
+**Superposition**, in which particles exist in multiple states simultaneously, can be likened to the **uncertainty** in a BNN, where a weight does not take on a fixed value but instead exists as a range of possibilities. A BNN doesn’t collapse into a single solution immediately but remains in a state of **superposition** of possible weight values, adjusting over time as more data is introduced.
+
+In both cases, uncertainty is not merely a result of a lack of information, but an intrinsic aspect of how the world functions. This is where **Bayesian Neural Networks** draw an essential parallel with quantum mechanics: in both systems, the observer’s interaction (whether a measurement or a training dataset) results in a collapse of possibilities, and the more information we gain, the more confident we become in the outcome.
 
 ---
 
 ### **The Role of Uncertainty in Predictions**
 
-BNNs provide probability distributions over outputs, allowing us to quantify the model's confidence in its predictions. This is crucial in applications like medical diagnosis, where understanding the uncertainty can inform risk assessments and decision-making.
+One of the defining features of **BNNs** is their ability to quantify **uncertainty** in predictions. Traditional neural networks output a point estimate — a single prediction based on fixed weights. But this doesn’t tell us how confident the model is in that prediction. For instance, if a neural network predicts a class label with 90% confidence, we don’t know what the remaining 10% uncertainty means — could the model be wrong in that 10% of cases? What happens when the data is sparse or noisy?
 
-For example, if a BNN predicts a 90% probability of disease presence with low uncertainty, a clinician might proceed differently than if the uncertainty were high.
-
----
-
-### **Implementing a Bayesian Neural Network for Sentiment Analysis with Feedback Integration**
-
-Let's build a BNN for sentiment analysis, demonstrating how to incorporate uncertainty estimation and user feedback into model training.
+**BNNs**, however, provide not just predictions but **probability distributions** over possible outcomes. This is like saying, "I’m 80% sure this is a cat, but I’m 20% unsure, and I might be wrong." This helps the model make more informed decisions, especially in situations of uncertainty. For example, in medical diagnosis, a **BNN** might predict a disease with 90% certainty but also highlight that it’s unsure about certain features of the case. This provides clinicians with actionable insights — when to trust the model, and when to question its findings.
 
 ---
 
-#### **1. Loading Pre-trained Word Embeddings**
+### **Atoms, Electrons, and the Uncertainty of Existence**
 
-We use GloVe embeddings to convert words into numerical vectors capturing semantic meanings.
+The probabilistic nature of Bayesian Neural Networks parallels the very **tendencies of particles** in the quantum world. **Atoms** are not rigid structures but exist in fluctuating states, with **electrons** moving in **probabilistic orbits** around the nucleus, described by wavefunctions. Until we measure the electron’s position, it exists in a "cloud" of probabilities, where its location is uncertain, a concept known as the **Heisenberg Uncertainty Principle**.
+
+In a similar way, a **BNN’s weights** are not fixed until they are "observed" (trained on data). Until then, they exist in a state of **probabilistic distribution**. This model of uncertainty reflects the same behavior at the atomic scale — a world that is fundamentally probabilistic, where nothing is deterministic until measured or observed.
+
+Moreover, in quantum mechanics, when particles are confined, they exhibit **quantum fluctuations** and movement — their behavior cannot be entirely predicted. This mirrors the way a **BNN**, when exposed to new data, will adjust its weights and uncertainty to improve prediction accuracy. The model is always "reacting" to data, much like how particles move and interact within their confined space, adapting to the uncertainty of their environment.
+
+---
+
+### **The Interconnectedness of All Things: A Quantum Web**
+
+Quantum mechanics suggests that the universe is **interconnected** at a fundamental level, where particles influence each other instantaneously, regardless of distance. This phenomenon, known as **quantum entanglement**, proposes that the state of one particle is deeply linked to the state of another, even across vast distances. This interconnectedness challenges our classical ideas of isolated objects and introduces the idea that **everything is linked**, no matter how distant or separate it may seem.
+
+In the world of **Bayesian Neural Networks**, this interconnectedness is mirrored in the relationships between weights and predictions. **BNNs** are not a collection of independent variables; instead, each weight in the network is related to others. When you change one part of the network, it impacts the whole, just as changing the state of one particle in an entangled system can influence its counterpart.
+
+The interconnectedness in **BNNs** reflects a broader, more holistic understanding of intelligence. No decision, no prediction, exists in isolation. Every piece of information, every weight in the network, is tied to every other piece. This web of relationships creates a model that is more dynamic, more adaptable, and better able to handle uncertainty and complexity.
+
+In the same way that particles in the quantum world are interdependent, everything in the universe is interconnected — from subatomic particles to vast cosmic phenomena. Embracing the interconnected nature of both quantum reality and AI models like **BNNs** helps us approach problems from a more **systemic** and **holistic** perspective. In doing so, we can tackle challenges with a deeper understanding of the underlying relationships that bind everything together.
+
+---
+
+### **Building a Bayesian Neural Network for Sentiment Analysis with Feedback Integration**
+
+---
+
+### 1. Understanding Bayesian Neural Networks
+
+Bayesian Neural Networks introduce uncertainty estimates into deep learning models by integrating Bayesian inference. Unlike traditional neural networks, BNNs provide probability distributions over the weights and outputs, allowing the model to express uncertainty about its predictions.
+
+**Advantages:**
+
+- **Uncertainty Estimation:** Provides confidence intervals for predictions.
+- **Robustness:** Better generalization to unseen data.
+- **Adaptive Learning:** Capable of updating beliefs with new data.
+
+### 2. Loading Pre-trained Word Embeddings
+
+We use GloVe (Global Vectors for Word Representation) embeddings to convert words into numerical vectors that capture semantic meaning.
 
 ```python
 def load_glove_embeddings(glove_file_path='glove.6B.300d.txt'):
@@ -94,242 +111,235 @@ def load_glove_embeddings(glove_file_path='glove.6B.300d.txt'):
         for line in f:
             values = line.strip().split()
             word = values[0]
-            vector = np.array(values[1:], dtype=np.float32)
+            vector = torch.tensor([float(val) for val in values[1:]], dtype=torch.float32)
             embeddings[word] = vector
     return embeddings
 ```
 
-**Note:** Ensure you have the `glove.6B.300d.txt` file available.
+**Note:** Ensure you have the `glove.6B.300d.txt` file in your working directory.
 
----
+### 3. Creating a Synthetic Sentiment Dataset
 
-#### **2. Creating a Synthetic Sentiment Dataset**
-
-We create a synthetic dataset with positive and negative sentences for simplicity.
+To simulate a realistic environment, we create a synthetic dataset with predefined positive and negative sentences.
 
 ```python
 class SentimentDataset(Dataset):
-    def __init__(self, texts, labels, embeddings, max_length=50):
-        self.texts = texts
-        self.labels = labels
-        self.embeddings = embeddings
-        self.max_length = max_length
-
-    def __len__(self):
-        return len(self.texts)
-
-    def __getitem__(self, idx):
-        text = self.texts[idx]
-        label = self.labels[idx]
-        tokens = self.tokenize(text)
-        embedding = self.text_to_embedding(tokens)
-        return embedding, torch.tensor(label, dtype=torch.float32)
-
-    def tokenize(self, text):
-        # Simple whitespace tokenizer
-        return text.lower().split()
-
-    def text_to_embedding(self, tokens):
-        embeddings = []
-        for token in tokens[:self.max_length]:
-            embedding = self.embeddings.get(token, np.zeros(300))
-            embeddings.append(embedding)
-        # Pad sequences
-        if len(embeddings) < self.max_length:
-            padding = [np.zeros(300)] * (self.max_length - len(embeddings))
-            embeddings.extend(padding)
-        return torch.tensor(embeddings, dtype=torch.float32).flatten()
+    def __init__(self, num_samples=1000, embeddings=None):
+        self.embeddings = embeddings if embeddings else {}
+        self.positive_sentences = [
+            "I love this product!",
+            "Absolutely fantastic experience.",
+            # ... more positive sentences ...
+        ]
+        self.negative_sentences = [
+            "This is terrible.",
+            "Absolutely horrible experience.",
+            # ... more negative sentences ...
+        ]
+        self.texts = []
+        self.labels = []
+        for i in range(num_samples):
+            if i % 2 == 0:
+                sentence = random.choice(self.positive_sentences)
+                label = 1
+            else:
+                sentence = random.choice(self.negative_sentences)
+                label = 0
+            self.texts.append(sentence)
+            self.labels.append(label)
 ```
 
----
+**Tokenization and Embedding:**
 
-#### **3. Building the Data Module**
+We clean, tokenize, and convert each sentence into a fixed-length embedding vector using GloVe embeddings.
 
-We use PyTorch Lightning's `LightningDataModule` to handle data loading and preparation.
+### 4. Building the Data Module
+
+Using PyTorch Lightning's `LightningDataModule`, we handle data preparation, including training-validation split and data loading.
 
 ```python
 class SentimentDataModule(pl.LightningDataModule):
-    def __init__(self, batch_size, embeddings):
+    def __init__(self, batch_size=BATCH_SIZE, num_samples=NUM_SAMPLES, embeddings=None):
         super().__init__()
         self.batch_size = batch_size
+        self.num_samples = num_samples
         self.embeddings = embeddings
-
-    def prepare_data(self):
-        # Download or generate data
-        pass
+        self.train_dataset = None
+        self.val_dataset = None
 
     def setup(self, stage=None):
-        # Load data and split
-        texts = ["I love this product!", "This is terrible.", ...]
-        labels = [1, 0, ...]
-        dataset = SentimentDataset(texts, labels, self.embeddings)
+        if self.train_dataset is not None and self.val_dataset is not None:
+            return
+        dataset = SentimentDataset(num_samples=self.num_samples, embeddings=self.embeddings)
         train_size = int(0.8 * len(dataset))
         val_size = len(dataset) - train_size
-        self.train_dataset, self.val_dataset = random_split(
-            dataset, [train_size, val_size]
-        )
-
-    def train_dataloader(self):
-        return DataLoader(self.train_dataset, batch_size=self.batch_size)
-
-    def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size)
+        self.train_dataset, self.val_dataset = random_split(dataset, [train_size, val_size])
 ```
 
----
+**Incorporating Feedback Data:**
 
-#### **4. Defining the Bayesian Neural Network Model**
+We add a method `add_feedback` to include new feedback data into the training dataset.
 
-We implement Monte Carlo Dropout to approximate Bayesian inference.
+```python
+def add_feedback(self, feedback_texts, feedback_labels):
+    # Tokenize and create a TensorDataset for feedback
+    # Concatenate with the existing training dataset
+    self.train_dataset = ConcatDataset([self.train_dataset, feedback_tensor_dataset])
+```
+
+### 5. Defining the Bayesian Neural Network Model
+
+We construct the BNN using Monte Carlo Dropout layers to approximate Bayesian inference.
 
 ```python
 class BayesianNN(pl.LightningModule):
-    def __init__(self, input_dim, hidden_dim, output_dim, dropout_prob, lr):
+    def __init__(self, input_dim=INPUT_DIM, hidden_dim=HIDDEN_DIM, output_dim=OUTPUT_DIM, p=DROPOUT_PROB, lr=LEARNING_RATE):
         super(BayesianNN, self).__init__()
         self.save_hyperparameters()
-        self.model = nn.Sequential(
-            nn.Linear(input_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Dropout(dropout_prob),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Dropout(dropout_prob),
-            nn.Linear(hidden_dim, output_dim)
-        )
+        self.fc1 = nn.Linear(input_dim, hidden_dim)
+        self.dropout1 = nn.Dropout(p)
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+        self.dropout2 = nn.Dropout(p)
+        self.fc3 = nn.Linear(hidden_dim, output_dim)
+        self.activation = nn.ReLU()
         self.loss_fn = nn.BCEWithLogitsLoss()
-        self.lr = lr
 
     def forward(self, x):
-        return self.model(x).squeeze()
-
-    def training_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.loss_fn(logits, y)
-        self.log('train_loss', loss)
-        return loss
-
-    def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=self.lr)
-
-    def predict_proba(self, x, n_samples=10):
-        self.train()  # Enable dropout
-        predictions = []
-        with torch.no_grad():
-            for _ in range(n_samples):
-                logits = self(x)
-                preds = torch.sigmoid(logits)
-                predictions.append(preds.unsqueeze(0))
-        predictions = torch.cat(predictions, dim=0)
-        mean = predictions.mean(dim=0)
-        std = predictions.std(dim=0)
-        self.eval()  # Disable dropout
-        return mean, std
+        x = self.activation(self.fc1(x))
+        x = self.dropout1(x)
+        x = self.activation(self.fc2(x))
+        x = self.dropout2(x)
+        x = self.fc3(x)
+        return x
 ```
 
-**Note on Monte Carlo Dropout:**
+**Predicting with Uncertainty:**
 
-Using dropout at inference approximates sampling from the posterior distribution over the network's weights, providing a practical method for uncertainty estimation in BNNs.
-
----
-
-#### **5. Training the Model**
-
-We initialize and train the model.
+We perform multiple forward passes with dropout enabled to estimate uncertainty.
 
 ```python
-INPUT_DIM = 300 * 50  # Embedding size * max_length
-HIDDEN_DIM = 128
-OUTPUT_DIM = 1
-DROPOUT_PROB = 0.5
-LEARNING_RATE = 1e-3
-BATCH_SIZE = 32
+def predict_sentiment(self, x, num_samples=MC_SAMPLES):
+    self.train()
+    predictions = []
+    with torch.no_grad():
+        for _ in range(num_samples):
+            logits = self(x)
+            preds = torch.sigmoid(logits)
+            predictions.append(preds)
+    predictions = torch.stack(predictions)
+    mean_prediction = torch.mean(predictions, dim=0)
+    uncertainty = torch.std(predictions, dim=0)
+    self.eval()
+    return mean_prediction, uncertainty
+```
 
-embeddings = load_glove_embeddings()
-data_module = SentimentDataModule(batch_size=BATCH_SIZE, embeddings=embeddings)
+### 6. Training the Model
 
-model = BayesianNN(
-    input_dim=INPUT_DIM,
-    hidden_dim=HIDDEN_DIM,
-    output_dim=OUTPUT_DIM,
-    dropout_prob=DROPOUT_PROB,
-    lr=LEARNING_RATE
+We initialize and train the model using PyTorch Lightning's `Trainer`.
+
+```python
+model = BayesianNN()
+trainer = pl.Trainer(
+    max_epochs=EPOCHS,
+    callbacks=[progress_bar, early_stop_callback, lr_monitor],
+    deterministic=True
 )
-
-trainer = pl.Trainer(max_epochs=10)
 trainer.fit(model, datamodule=data_module)
 ```
 
----
+### 7. Making Predictions Before Feedback
 
-#### **6. Making Predictions Before Feedback**
+Before incorporating feedback, we test the model on a set of sample texts.
 
-```python
-def predict_sentiment(text):
-    tokens = data_module.train_dataset.dataset.tokenize(text)
-    embedding = data_module.train_dataset.dataset.text_to_embedding(tokens)
-    mean, std = model.predict_proba(embedding.unsqueeze(0))
-    prediction = 'Positive' if mean.item() > 0.5 else 'Negative'
-    print(f'Text: "{text}"')
-    print(f'Prediction: {mean.item():.4f} ({prediction})')
-    print(f'Uncertainty: {std.item():.4f}')
+**Sample Predictions:**
 
-# Example usage
-predict_sentiment("This product is amazing!")
-predict_sentiment("I hate this item.")
+```
+Text: "This product is amazing!"
+  Prediction: 0.0244 (Negative)
+  Uncertainty: 0.0991
+
+Text: "I hate this item."
+  Prediction: 0.6569 (Positive)
+  Uncertainty: 0.3535
 ```
 
 **Observations:**
 
-- The model may incorrectly predict sentiments due to limited training data.
-- High uncertainty indicates where the model lacks confidence.
+- The model incorrectly predicts some sentiments.
+- High uncertainty indicates the model's lack of confidence.
 
----
+### 8. Incorporating User Feedback
 
-#### **7. Incorporating User Feedback**
-
-We can improve the model by adding new labeled data (feedback) and retraining.
+We gather user feedback to improve the model's predictions.
 
 ```python
 feedback_texts = [
     "This product is amazing!",
     "Absolutely love it!",
-    # ... additional feedback ...
+    # ... more feedback texts ...
 ]
-feedback_labels = [1, 1, ...]  # Corresponding labels
+feedback_labels = [1]*10 + [0]*10  # 10 positive and 10 negative
+data_module.add_feedback(feedback_texts, feedback_labels)
+```
 
-# Convert feedback to embeddings
-feedback_dataset = SentimentDataset(feedback_texts, feedback_labels, embeddings)
+**Process:**
 
-# Update training dataset
-data_module.train_dataset = ConcatDataset([data_module.train_dataset, feedback_dataset])
+- **Collect Feedback:** Gather new data points with correct labels.
+- **Add to Dataset:** Incorporate the feedback into the training data.
+- **Retrain the Model:** Update the model with the new data.
 
-# Retrain the model
+### 9. Retraining the Model with Feedback
+
+We retrain the model using the updated dataset.
+
+```python
+# Reinitialize the trainer to reset optimizer states
+trainer = pl.Trainer(
+    max_epochs=EPOCHS,
+    callbacks=[progress_bar, early_stop_callback, lr_monitor],
+    deterministic=True
+)
 trainer.fit(model, datamodule=data_module)
 ```
 
-**Considerations:**
+**Ensuring Training Mode:**
 
-- **Overfitting:** Adding new data of a similar type may cause the model to overfit. To mitigate this, ensure the feedback data is diverse and consider using techniques like regularization or early stopping.
-- **Validation Set:** Use a separate validation set to monitor performance and prevent overfitting.
-
----
-
-#### **8. Observing Improvements**
-
-After retraining, we reassess the model's predictions.
+Before retraining, set the model back to training mode to enable parameter updates.
 
 ```python
-predict_sentiment("This product is amazing!")
-predict_sentiment("I hate this item.")
+model.train()
+```
+
+### 10. Observing the Improvements
+
+After retraining, we make predictions on the same sample texts.
+
+**Updated Predictions:**
+
+```
+Text: "This product is amazing!"
+  Prediction: 0.9986 (Positive)
+  Uncertainty: 0.0134
+
+Text: "I hate this item."
+  Prediction: 0.0000 (Negative)
+  Uncertainty: 0.0003
 ```
 
 **Improvements:**
 
-- The model should now make more accurate predictions with reduced uncertainty, reflecting increased confidence due to additional data.
+- The model now correctly predicts sentiments.
+- Reduced uncertainty reflects increased confidence due to new data.
+
+By integrating user feedback, we've enhanced the model's performance significantly. This approach demonstrates the power of Bayesian Neural Networks combined with active learning strategies in creating adaptable NLP models.
+
+**Key Takeaways:**
+
+- **Dynamic Learning:** Models can be updated with new data to improve over time.
+- **Uncertainty Estimation:** BNNs provide valuable insights into prediction confidence.
+- **User Feedback Integration:** Actively incorporating feedback leads to more accurate and robust models.
 
 ---
-
 
 ### **Conclusion: The Infinite Potential of Embracing Uncertainty**
 
@@ -339,39 +349,65 @@ predict_sentiment("I hate this item.")
 
 ---
 
-### **Applications of BNNs in Content Suitability Classification**
+### When to use BNNs
 
-#### **Uncertainty in Classification**
+Bayesian Neural Networks (BNNs) are particularly useful in applications where uncertainty quantification is crucial. In the context of detecting whether a YouTube video is suitable for children based on its transcript, BNNs can offer several advantages. Here are some potential applications:
 
-In applications like determining whether a YouTube video is suitable for children based on its transcript, BNNs can:
+### 1. **Uncertainty in Classification**
+   - **Video Transcript Classification**: BNNs can be used to classify the video transcript as "suitable" or "not suitable" for children by taking into account uncertainty in the model's predictions. This is important when dealing with noisy or ambiguous text, where the model might not be certain whether a piece of content is child-friendly.
+   - **Probabilistic Output**: Instead of outputting a hard "yes" or "no," a BNN can provide a probability distribution over the possible outcomes, allowing for better decision-making in borderline cases. For example, the model might predict a 70% probability that a video is suitable, which could trigger further review or action.
 
-- **Quantify Confidence:** Provide probability distributions over classifications, allowing for more nuanced decisions.
-- **Flag Uncertain Cases:** Videos with high uncertainty can be flagged for human review, optimizing resource allocation.
+### 2. **Improved Generalization**
+   - **Handling Diverse Content**: YouTube videos contain a wide variety of content, and transcripts may range from educational material to entertainment. A BNN can help the model generalize better across different types of videos, especially when trained with a diverse dataset. The probabilistic nature of BNNs can prevent overfitting to specific styles of language, which can be common in traditional neural networks.
 
-#### **Improved Generalization**
+### 3. **Anomaly Detection in Content**
+   - **Outlier Detection**: Bayesian networks can help detect rare or anomalous patterns in video transcripts that might not be adequately covered in the training data. For example, a transcript that contains unexpectedly violent or inappropriate language might stand out as an anomaly, which could be flagged for review.
+   - **Sensitivity to Rare Features**: For example, certain words or phrases might be less common but still indicative of inappropriate content. BNNs can more easily adapt to recognize such rare features because they inherently handle uncertainty better than standard models.
 
-- **Handling Diverse Content:** BNNs can better generalize across various content types, reducing the risk of misclassification due to overfitting.
-- **Adaptation to New Trends:** As content evolves, BNNs can update their weight distributions to reflect new patterns.
+### 4. **Personalized Content Filtering**
+   - **User-Specific Filtering**: If there are different categories of child-friendly content based on age group, a BNN could potentially adapt to different content suitability models for different children or user profiles, considering uncertainty in individual preferences or sensitivities.
+
+### 5. **Model Calibration and Feedback Loops**
+   - **Continuous Learning**: Since Bayesian Neural Networks quantify uncertainty, they can provide a natural way to incorporate user feedback. If a user flags a video as inappropriate, the model can adjust based on this feedback with a more informed understanding of uncertainty. This allows for continuous improvement of the model without requiring a complete retraining.
+
+### 6. **Decision Support Systems**
+   - **Human-in-the-loop Systems**: For videos that are borderline, the BNN could trigger a human review process by indicating uncertainty or low confidence in the decision. This would help moderators focus their attention on content that the model is unsure about.
+
+### 7. **Adaptation to Changing Content Trends**
+   - **Dynamic Updates**: YouTube videos are constantly evolving in terms of language use, cultural references, and trends. BNNs can be particularly effective in adapting to such changes by allowing for continual learning from new data while maintaining a level of confidence in predictions.
 
 ---
 
-### **Appendix: Further Insights into Uncertainty and AI**
+### **Appendix: Additional Thought-Provoking Concepts**
 
-#### **1. Epistemic vs. Aleatoric Uncertainty**
+---
 
-Understanding the difference between these uncertainties is crucial:
+#### **1. The Paradox of Uncertainty: Why We Must Embrace the Unknown**
 
-- **Epistemic Uncertainty:** Due to limited data or knowledge about the model parameters. Can be reduced by collecting more data.
-- **Aleatoric Uncertainty:** Inherent noise in the data that cannot be reduced.
+In a world driven by data and predictability, uncertainty is often seen as something to minimize or eliminate. The goal in traditional machine learning models is to optimize and reduce the error, ensuring that the model provides the most confident, deterministic predictions. However, in the context of **Bayesian Neural Networks**, uncertainty isn't something to fear, but something to **embrace**. When we acknowledge uncertainty, we open ourselves up to more informed, nuanced decision-making.
 
-BNNs primarily model epistemic uncertainty, which is essential for understanding where the model might fail due to lack of knowledge.
+In quantum mechanics, **uncertainty** is intrinsic — particles do not behave according to fixed rules. Rather, their behavior is probabilistic. Electrons exist in **superposition**, a state where they occupy multiple possibilities at once, only collapsing into a single state when observed. This is not a flaw but an inherent feature of the quantum world. In much the same way, **Bayesian Neural Networks** understand that data doesn’t provide absolute answers but rather points toward a **distribution of possibilities**. Embracing uncertainty allows for better predictions, especially in complex, unpredictable environments.
 
-#### **2. Limitations of the Quantum Mechanics Analogy**
+This acceptance of uncertainty is a powerful lesson. In both science and life, when we stop clinging to certainty, we create space for growth, exploration, and discovery. It’s in the unknown that we often make our greatest breakthroughs — not just in AI, but in our understanding of the universe itself.
 
-While drawing parallels between BNNs and quantum mechanics is intriguing, it's important to recognize the limitations:
+---
 
-- **Mathematical Differences:** Quantum mechanics is governed by the Schrödinger equation and complex probability amplitudes, whereas BNNs use Bayesian probability.
-- **Interpretational Caution:** Overextending the analogy may lead to misconceptions about either field.
+#### **2. The Dance of Light and Matter: The Wave-Particle Duality in AI**
 
-By acknowledging these limitations, we maintain precision in our explanations while still appreciating the conceptual similarities.
+One of the most fascinating principles of quantum mechanics is **wave-particle duality** — the idea that particles such as light or electrons can exhibit both **particle-like** and **wave-like** properties, depending on how they are observed. This dual nature of matter and energy seems paradoxical, but it is an essential aspect of reality. It challenges our classical understanding of objects being either one thing or another, and invites us to consider a more fluid, flexible approach to nature.
 
+In AI, **Bayesian Neural Networks** exhibit a kind of **wave-particle duality** in how they handle data and uncertainty. Like quantum particles, BNNs don’t collapse to a single state until observed, instead existing in a **superposition of possibilities**. This probabilistic model is akin to the wave-like behavior of quantum particles, where multiple outcomes are possible at the same time. When we "measure" or process the data, we collapse this uncertainty into a more definite outcome, similar to how light behaves as a particle during an observation.
+
+This wave-particle duality in **BNNs** doesn’t just allow for uncertainty — it enhances it, creating a system that is inherently more adaptive and able to deal with complexity and ambiguity. By modeling the multiple possible outcomes of a given situation, **BNNs** can handle situations in a way traditional neural networks cannot, especially in environments where outcomes are not deterministic but probabilistic.
+
+---
+
+#### **3. Existence as a Superposition of Possibilities**
+
+Imagine a universe in which every possibility exists simultaneously until it is observed. In quantum mechanics, this is the nature of **superposition**. A quantum system, like an electron, doesn’t have a single, fixed state. Instead, it exists in multiple potential states, each with a certain probability, and only "chooses" one when it is measured or observed. This phenomenon implies that reality itself is not one fixed thing but a web of interconnected possibilities.
+
+Similarly, **Bayesian Neural Networks** operate in a state of superposition. Instead of producing a single, deterministic answer, **BNNs** maintain a distribution of possible outcomes. This distribution represents all the potential scenarios that could unfold given the current data, along with the uncertainty that surrounds each one. The more data the network receives, the more its predictions collapse into a single, more reliable outcome, akin to how the quantum system collapses into a definite state once observed.
+
+This concept of **existence as a superposition of possibilities** invites a new way of thinking about our reality and the AI models that interact with it. What if we stopped thinking about outcomes as fixed points? What if, instead of striving for certainty, we embraced the inherent fluidity of reality — a reality where multiple possibilities exist simultaneously, each with its own likelihood of becoming the "truth"?
+
+In AI, this perspective is incredibly valuable. When we acknowledge the superposition of possibilities, we open the door to more flexible, adaptable systems that are capable of handling uncertainty and complexity in a way traditional deterministic models cannot. This mindset change allows us to approach challenges from a place of openness, where multiple possibilities are always on the table.
