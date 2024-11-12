@@ -8,6 +8,8 @@
 
 ---
 
+![](https://nyk510.github.io/bayesian-neural-network/sample_figures/hidden=512_relu_dropout.gif)
+
 ### **Introduction: The Power of Probabilities in AI and Reality**
 
 Artificial intelligence (AI) is reshaping our world, from self-driving cars to natural language processing, and **Bayesian Neural Networks (BNNs)** are at the forefront of making AI smarter, more interpretable, and more reliable. Traditional neural networks have transformed numerous industries, but their inability to model uncertainty leaves them vulnerable to poor decision-making, especially in complex, unpredictable environments.
