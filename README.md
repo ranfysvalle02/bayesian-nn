@@ -16,6 +16,8 @@ The mean of this distribution is the model's prediction, similar to a traditiona
 
 If the model is very certain, all the predictions will be close to the mean, and the spread will be small. If the model is uncertain, the predictions will be spread out over a larger range, and the spread will be large.
 
+In the quantum world, particles exist in a state of superposition, embodying multiple possibilities at once until observed. Similarly, in the world of BNNs, the model's weights aren't fixed but exist in a state of probabilistic flux, representing a multitude of potential realities. 
+
 ---
 
 ### **Introduction: The Power of Probabilities in AI and Reality**
