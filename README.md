@@ -4,8 +4,6 @@
 
 ---
 
-![](https://nyk510.github.io/bayesian-neural-network/sample_figures/hidden=512_relu_dropout.gif)
-
 ### **Demystifying Bayesian Neural Networks: A Probabilistic Approach to Smarter AI**
 
 In traditional neural networks, when we make a prediction, we get a single output. For example, in a binary classification problem, we might get a single probability that a given input belongs to the positive class.
@@ -116,6 +114,8 @@ The result is a distribution of weights instead of a single set. This allows the
 ---
 
 ### **Quantifying Uncertainty in Bayesian Neural Networks**
+
+![](https://nyk510.github.io/bayesian-neural-network/sample_figures/hidden=512_relu_dropout.gif)
 
 One of the key advantages of Bayesian Neural Networks is their ability to quantify uncertainty. This is achieved through the distribution of weights and the use of dropout during prediction.
 
