@@ -26,8 +26,6 @@ Artificial intelligence (AI) is reshaping our world, from self-driving cars to n
 
 Bayesian Neural Networks step in to fill this gap. These probabilistic models go beyond deterministic weights and values, embracing uncertainty as a central component of intelligence. But what if I told you that the concept of uncertainty isn’t just fundamental to AI, but to the very nature of reality itself? At the atomic level, particles behave probabilistically, existing in states of superposition, uncertainty, and probability. Waves and particles, once thought to be opposites, merge into a unified whole through quantum mechanics. What if the way AI handles uncertainty echoes the very principles of the universe?
 
-In this post, we’ll dive deep into **Bayesian Neural Networks**, how they incorporate uncertainty in decision-making, and explore the fascinating connection between these AI models and the fundamental principles of **quantum mechanics**, such as **superposition**, **wave-particle duality**, and the **probabilistic nature of existence** itself.
-
 ---
 
 ### **Bayesian Neural Networks: Where Probability Meets Intelligence**
@@ -141,25 +139,15 @@ In both cases, uncertainty is not merely a result of a lack of information, but 
 
 ---
 
-### **Atoms, Electrons, and the Uncertainty of Existence**
-
-The probabilistic nature of Bayesian Neural Networks parallels the very **tendencies of particles** in the quantum world. **Atoms** are not rigid structures but exist in fluctuating states, with **electrons** moving in **probabilistic orbits** around the nucleus, described by wavefunctions. Until we measure the electron’s position, it exists in a "cloud" of probabilities, where its location is uncertain, a concept known as the **Heisenberg Uncertainty Principle**.
-
-In a similar way, a **BNN’s weights** are not fixed until they are "observed" (trained on data). Until then, they exist in a state of **probabilistic distribution**. This model of uncertainty reflects the same behavior at the atomic scale — a world that is fundamentally probabilistic, where nothing is deterministic until measured or observed.
-
-Moreover, in quantum mechanics, when particles are confined, they exhibit **quantum fluctuations** and movement — their behavior cannot be entirely predicted. This mirrors the way a **BNN**, when exposed to new data, will adjust its weights and uncertainty to improve prediction accuracy. The model is always "reacting" to data, much like how particles move and interact within their confined space, adapting to the uncertainty of their environment.
-
----
-
 ### **The Interconnectedness of All Things: A Quantum Web**
 
 Quantum mechanics suggests that the universe is **interconnected** at a fundamental level, where particles influence each other instantaneously, regardless of distance. This phenomenon, known as **quantum entanglement**, proposes that the state of one particle is deeply linked to the state of another, even across vast distances. This interconnectedness challenges our classical ideas of isolated objects and introduces the idea that **everything is linked**, no matter how distant or separate it may seem.
 
-In the world of **Bayesian Neural Networks**, this interconnectedness is mirrored in the relationships between weights and predictions. **BNNs** are not a collection of independent variables; instead, each weight in the network is related to others. When you change one part of the network, it impacts the whole, just as changing the state of one particle in an entangled system can influence its counterpart.
+In the world of **Neural Networks**, this interconnectedness is mirrored in the relationships between weights and predictions. **BNNs** are not a collection of independent variables; instead, each weight in the network is related to others. When you change one part of the network, it impacts the whole, just as changing the state of one particle in an entangled system can influence its counterpart.
 
-The interconnectedness in **BNNs** reflects a broader, more holistic understanding of intelligence. No decision, no prediction, exists in isolation. Every piece of information, every weight in the network, is tied to every other piece. This web of relationships creates a model that is more dynamic, more adaptable, and better able to handle uncertainty and complexity.
+The interconnectedness in **neural networks** reflects a broader, more holistic understanding of intelligence. No decision, no prediction, exists in isolation. Every piece of information, every weight in the network, is tied to every other piece. This web of relationships creates a model that is more dynamic, more adaptable, and better able to handle uncertainty and complexity.
 
-In the same way that particles in the quantum world are interdependent, everything in the universe is interconnected — from subatomic particles to vast cosmic phenomena. Embracing the interconnected nature of both quantum reality and AI models like **BNNs** helps us approach problems from a more **systemic** and **holistic** perspective. In doing so, we can tackle challenges with a deeper understanding of the underlying relationships that bind everything together.
+In the same way that particles in the quantum world are interdependent, everything in the universe is interconnected — from subatomic particles to vast cosmic phenomena. Embracing the interconnected nature of both quantum reality and AI models like **Bayesian Neural Networks (BNNs)** helps us approach problems from a more **systemic** and **holistic** perspective. In doing so, we can tackle challenges with a deeper understanding of the underlying relationships that bind everything together.
 
 ---
 
