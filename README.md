@@ -2,13 +2,11 @@
 
 ---
 
-![](https://paperthatiread.com/wp-content/uploads/2024/01/Gaussian-Processes-10-1024x576.png) 
+![](https://nyk510.github.io/bayesian-neural-network/sample_figures/hidden=512_relu_dropout.gif)
 
 ### **Demystifying Bayesian Neural Networks: A Probabilistic Approach to Smarter AI**
 
 ---
-
-![](https://nyk510.github.io/bayesian-neural-network/sample_figures/hidden=512_relu_dropout.gif)
 
 ### **Introduction: The Power of Probabilities in AI and Reality**
 
