@@ -420,6 +420,8 @@ By integrating user feedback, we've enhanced the model's performance significant
 
 ### When to use BNNs
 
+![](https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41467-023-43317-9/MediaObjects/41467_2023_43317_Fig1_HTML.png)
+
 Bayesian Neural Networks (BNNs) are particularly useful in applications where uncertainty quantification is crucial. In the context of detecting whether a YouTube video is suitable for children based on its transcript, BNNs can offer several advantages. Here are some potential applications:
 
 ### 1. **Uncertainty in Classification**
