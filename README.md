@@ -438,7 +438,12 @@ Bayesian Neural Networks (BNNs) are particularly useful in applications where un
 
 ### **Appendix: Additional Thought-Provoking Concepts**
 
-![](https://media.licdn.com/dms/image/v2/C4D12AQGFqhw1IU8pzw/article-inline_image-shrink_400_744/article-inline_image-shrink_400_744/0/1614017680505?e=1734566400&v=beta&t=z7-sL1Mds1xA86vMmXMyxG92jc9VTvKks4aHVK5oru8)
+<table>
+  <tr>
+    <td><img src="https://media.licdn.com/dms/image/v2/C4D12AQGFqhw1IU8pzw/article-inline_image-shrink_400_744/article-inline_image-shrink_400_744/0/1614017680505?e=1734566400&v=beta&t=z7-sL1Mds1xA86vMmXMyxG92jc9VTvKks4aHVK5oru8" style="width: 100%;"/></td>
+    <td><img src="https://miro.medium.com/v2/resize:fit:1000/format:webp/1*-Haji114hoOypkf8zTeCYQ.jpeg" style="width: 100%;"/></td>
+  </tr>
+</table>
 
 ---
 
