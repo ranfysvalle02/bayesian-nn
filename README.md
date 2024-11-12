@@ -1,5 +1,7 @@
 # bayesian-nn
 
+![](https://external-preview.redd.it/xXngloBFTRvBn0Jmt4PGQW4sxcFvGFmir4BJqRT78Ns.jpg?auto=webp&s=b057d0d8dbc851f6b65abb3656d903b856352479)
+
 ---
 
 ![](https://nyk510.github.io/bayesian-neural-network/sample_figures/hidden=512_relu_dropout.gif)
