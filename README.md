@@ -118,6 +118,263 @@ This concept of **existence as a superposition of possibilities** invites a new 
 
 In AI, this perspective is incredibly valuable. When we acknowledge the superposition of possibilities, we open the door to more flexible, adaptable systems that are capable of handling uncertainty and complexity in a way traditional deterministic models cannot. This mindset change allows us to approach challenges from a place of openness, where multiple possibilities are always on the table.
 
+Yes, based on the output you've provided, the code is working correctly! The model is successfully incorporating the feedback data during retraining, and the predictions after retraining show the expected improvements. This indicates that your implementation is functioning as intended.
+
+---
+
+### **Building a Bayesian Neural Network for Sentiment Analysis with Feedback Integration**
+
+---
+
+### 1. Understanding Bayesian Neural Networks
+
+Bayesian Neural Networks introduce uncertainty estimates into deep learning models by integrating Bayesian inference. Unlike traditional neural networks, BNNs provide probability distributions over the weights and outputs, allowing the model to express uncertainty about its predictions.
+
+**Advantages:**
+
+- **Uncertainty Estimation:** Provides confidence intervals for predictions.
+- **Robustness:** Better generalization to unseen data.
+- **Adaptive Learning:** Capable of updating beliefs with new data.
+
+### 2. Loading Pre-trained Word Embeddings
+
+We use GloVe (Global Vectors for Word Representation) embeddings to convert words into numerical vectors that capture semantic meaning.
+
+```python
+def load_glove_embeddings(glove_file_path='glove.6B.300d.txt'):
+    embeddings = {}
+    with open(glove_file_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            values = line.strip().split()
+            word = values[0]
+            vector = torch.tensor([float(val) for val in values[1:]], dtype=torch.float32)
+            embeddings[word] = vector
+    return embeddings
+```
+
+**Note:** Ensure you have the `glove.6B.300d.txt` file in your working directory.
+
+### 3. Creating a Synthetic Sentiment Dataset
+
+To simulate a realistic environment, we create a synthetic dataset with predefined positive and negative sentences.
+
+```python
+class SentimentDataset(Dataset):
+    def __init__(self, num_samples=1000, embeddings=None):
+        self.embeddings = embeddings if embeddings else {}
+        self.positive_sentences = [
+            "I love this product!",
+            "Absolutely fantastic experience.",
+            # ... more positive sentences ...
+        ]
+        self.negative_sentences = [
+            "This is terrible.",
+            "Absolutely horrible experience.",
+            # ... more negative sentences ...
+        ]
+        self.texts = []
+        self.labels = []
+        for i in range(num_samples):
+            if i % 2 == 0:
+                sentence = random.choice(self.positive_sentences)
+                label = 1
+            else:
+                sentence = random.choice(self.negative_sentences)
+                label = 0
+            self.texts.append(sentence)
+            self.labels.append(label)
+```
+
+**Tokenization and Embedding:**
+
+We clean, tokenize, and convert each sentence into a fixed-length embedding vector using GloVe embeddings.
+
+### 4. Building the Data Module
+
+Using PyTorch Lightning's `LightningDataModule`, we handle data preparation, including training-validation split and data loading.
+
+```python
+class SentimentDataModule(pl.LightningDataModule):
+    def __init__(self, batch_size=BATCH_SIZE, num_samples=NUM_SAMPLES, embeddings=None):
+        super().__init__()
+        self.batch_size = batch_size
+        self.num_samples = num_samples
+        self.embeddings = embeddings
+        self.train_dataset = None
+        self.val_dataset = None
+
+    def setup(self, stage=None):
+        if self.train_dataset is not None and self.val_dataset is not None:
+            return
+        dataset = SentimentDataset(num_samples=self.num_samples, embeddings=self.embeddings)
+        train_size = int(0.8 * len(dataset))
+        val_size = len(dataset) - train_size
+        self.train_dataset, self.val_dataset = random_split(dataset, [train_size, val_size])
+```
+
+**Incorporating Feedback Data:**
+
+We add a method `add_feedback` to include new feedback data into the training dataset.
+
+```python
+def add_feedback(self, feedback_texts, feedback_labels):
+    # Tokenize and create a TensorDataset for feedback
+    # Concatenate with the existing training dataset
+    self.train_dataset = ConcatDataset([self.train_dataset, feedback_tensor_dataset])
+```
+
+### 5. Defining the Bayesian Neural Network Model
+
+We construct the BNN using Monte Carlo Dropout layers to approximate Bayesian inference.
+
+```python
+class BayesianNN(pl.LightningModule):
+    def __init__(self, input_dim=INPUT_DIM, hidden_dim=HIDDEN_DIM, output_dim=OUTPUT_DIM, p=DROPOUT_PROB, lr=LEARNING_RATE):
+        super(BayesianNN, self).__init__()
+        self.save_hyperparameters()
+        self.fc1 = nn.Linear(input_dim, hidden_dim)
+        self.dropout1 = nn.Dropout(p)
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+        self.dropout2 = nn.Dropout(p)
+        self.fc3 = nn.Linear(hidden_dim, output_dim)
+        self.activation = nn.ReLU()
+        self.loss_fn = nn.BCEWithLogitsLoss()
+
+    def forward(self, x):
+        x = self.activation(self.fc1(x))
+        x = self.dropout1(x)
+        x = self.activation(self.fc2(x))
+        x = self.dropout2(x)
+        x = self.fc3(x)
+        return x
+```
+
+**Predicting with Uncertainty:**
+
+We perform multiple forward passes with dropout enabled to estimate uncertainty.
+
+```python
+def predict_sentiment(self, x, num_samples=MC_SAMPLES):
+    self.train()
+    predictions = []
+    with torch.no_grad():
+        for _ in range(num_samples):
+            logits = self(x)
+            preds = torch.sigmoid(logits)
+            predictions.append(preds)
+    predictions = torch.stack(predictions)
+    mean_prediction = torch.mean(predictions, dim=0)
+    uncertainty = torch.std(predictions, dim=0)
+    self.eval()
+    return mean_prediction, uncertainty
+```
+
+### 6. Training the Model
+
+We initialize and train the model using PyTorch Lightning's `Trainer`.
+
+```python
+model = BayesianNN()
+trainer = pl.Trainer(
+    max_epochs=EPOCHS,
+    callbacks=[progress_bar, early_stop_callback, lr_monitor],
+    deterministic=True
+)
+trainer.fit(model, datamodule=data_module)
+```
+
+### 7. Making Predictions Before Feedback
+
+Before incorporating feedback, we test the model on a set of sample texts.
+
+**Sample Predictions:**
+
+```
+Text: "This product is amazing!"
+  Prediction: 0.0244 (Negative)
+  Uncertainty: 0.0991
+
+Text: "I hate this item."
+  Prediction: 0.6569 (Positive)
+  Uncertainty: 0.3535
+```
+
+**Observations:**
+
+- The model incorrectly predicts some sentiments.
+- High uncertainty indicates the model's lack of confidence.
+
+### 8. Incorporating User Feedback
+
+We gather user feedback to improve the model's predictions.
+
+```python
+feedback_texts = [
+    "This product is amazing!",
+    "Absolutely love it!",
+    # ... more feedback texts ...
+]
+feedback_labels = [1]*10 + [0]*10  # 10 positive and 10 negative
+data_module.add_feedback(feedback_texts, feedback_labels)
+```
+
+**Process:**
+
+- **Collect Feedback:** Gather new data points with correct labels.
+- **Add to Dataset:** Incorporate the feedback into the training data.
+- **Retrain the Model:** Update the model with the new data.
+
+### 9. Retraining the Model with Feedback
+
+We retrain the model using the updated dataset.
+
+```python
+# Reinitialize the trainer to reset optimizer states
+trainer = pl.Trainer(
+    max_epochs=EPOCHS,
+    callbacks=[progress_bar, early_stop_callback, lr_monitor],
+    deterministic=True
+)
+trainer.fit(model, datamodule=data_module)
+```
+
+**Ensuring Training Mode:**
+
+Before retraining, set the model back to training mode to enable parameter updates.
+
+```python
+model.train()
+```
+
+### 10. Observing the Improvements
+
+After retraining, we make predictions on the same sample texts.
+
+**Updated Predictions:**
+
+```
+Text: "This product is amazing!"
+  Prediction: 0.9986 (Positive)
+  Uncertainty: 0.0134
+
+Text: "I hate this item."
+  Prediction: 0.0000 (Negative)
+  Uncertainty: 0.0003
+```
+
+**Improvements:**
+
+- The model now correctly predicts sentiments.
+- Reduced uncertainty reflects increased confidence due to new data.
+
+By integrating user feedback, we've enhanced the model's performance significantly. This approach demonstrates the power of Bayesian Neural Networks combined with active learning strategies in creating adaptable NLP models.
+
+**Key Takeaways:**
+
+- **Dynamic Learning:** Models can be updated with new data to improve over time.
+- **Uncertainty Estimation:** BNNs provide valuable insights into prediction confidence.
+- **User Feedback Integration:** Actively incorporating feedback leads to more accurate and robust models.
+
 ---
 
 ### **Conclusion: The Infinite Potential of Embracing Uncertainty**
