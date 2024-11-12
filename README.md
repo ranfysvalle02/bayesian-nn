@@ -44,6 +44,39 @@ Through this probabilistic process, BNNs offer a more holistic way of making pre
 
 ---
 
+### **Understanding Bayesian Inference in Neural Networks**
+
+Bayesian inference is a method of statistical inference that updates the probability for a hypothesis as more evidence or information becomes available. In the context of neural networks, Bayesian inference is used to estimate the distribution of weights.
+
+In a traditional neural network, the weights are learned through optimization techniques like gradient descent, and they are fixed after training. However, in a Bayesian Neural Network (BNN), the weights are considered as random variables. The goal is not to find the best single set of weights, but rather to determine the distribution of weights that best explain the data.
+
+This is achieved through Bayes' theorem, which in the context of neural networks can be expressed as:
+
+P(weights | data) = [ P(data | weights) * P(weights) ] / P(data)
+
+Here:
+
+- P(weights | data) is the **posterior** distribution of the weights given the data. This is what we want to compute.
+- P(data | weights) is the **likelihood** of the data given the weights. This is computed based on the network's architecture and the activation function.
+- P(weights) is the **prior** distribution of the weights. This represents our belief about the weights before seeing the data.
+- P(data) is the **evidence** or marginal likelihood of the data. This is often difficult to compute directly, so we usually use techniques like Markov Chain Monte Carlo (MCMC) or Variational Inference to approximate the posterior distribution.
+
+The result is a distribution of weights instead of a single set. This allows the BNN to capture the uncertainty in the weights, which in turn provides a measure of uncertainty in the predictions.
+
+---
+
+### **Quantifying Uncertainty in Bayesian Neural Networks**
+
+One of the key advantages of Bayesian Neural Networks is their ability to quantify uncertainty. This is achieved through the distribution of weights and the use of dropout during prediction.
+
+In a BNN, dropout is not only used during training but also during prediction. This is known as Monte Carlo Dropout. During prediction, we run the model multiple times, each time with a different dropout mask, and collect all the outputs. This gives us a distribution of predictions for each input.
+
+The mean of this distribution is the model's prediction, similar to a traditional neural network. However, the spread of the distribution (often measured by standard deviation or variance) gives us a measure of the model's uncertainty about its prediction.
+
+If the model is very certain, all the predictions will be close to the mean, and the spread will be small. If the model is uncertain, the predictions will be spread out over a larger range, and the spread will be large.
+
+---
+
 ### **Uncertainty and the Quantum World: A Parallelogram of Possibilities**
 
 Uncertainty is at the core of both **Bayesian Neural Networks** and **quantum mechanics**. In quantum physics, particles such as **electrons** don’t have fixed positions and velocities until measured. Instead, they exist in a state of **superposition**, where they can be in multiple states at once, each with a certain probability. This is similar to the uncertainty in BNNs, where weights exist in a **probabilistic distribution** rather than a single deterministic value. This probabilistic view mirrors how quantum mechanics works at the atomic level, where reality itself becomes inherently uncertain until observed.
