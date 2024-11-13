@@ -436,39 +436,6 @@ Bayesian Neural Networks (BNNs) are particularly useful in applications where un
 
 ---
 
-### **Appendix: Additional Thought-Provoking Concepts**
-
-<table>
-  <tr>
-    <td><img src="https://media.licdn.com/dms/image/v2/C4D12AQGFqhw1IU8pzw/article-inline_image-shrink_400_744/article-inline_image-shrink_400_744/0/1614017680505?e=1734566400&v=beta&t=z7-sL1Mds1xA86vMmXMyxG92jc9VTvKks4aHVK5oru8" style="width: 100%;"/></td>
-    <td><img src="https://miro.medium.com/v2/resize:fit:1000/format:webp/1*-Haji114hoOypkf8zTeCYQ.jpeg" style="width: 100%;"/></td>
-  </tr>
-</table>
-
----
-
-#### **1. The Heisenberg Uncertainty Principle: Embracing the Quantum Unknown**
-
-In a world driven by data and predictability, uncertainty is often seen as something to minimize or eliminate. The goal in traditional machine learning models is to optimize and reduce the error, ensuring that the model provides the most confident, deterministic predictions. However, in the context of **Bayesian Neural Networks**, uncertainty isn't something to fear, but something to **embrace**. When we acknowledge uncertainty, we open ourselves up to more informed, nuanced decision-making.
-
-In quantum mechanics, **uncertainty** is intrinsic — particles do not behave according to fixed rules. This is encapsulated in the **Heisenberg Uncertainty Principle**, which states that the position and momentum of a particle cannot both be precisely measured at the same time. Rather, their behavior is probabilistic. Electrons exist in **superposition**, a state where they occupy multiple possibilities at once, only collapsing into a single state when observed. This is not a flaw but an inherent feature of the quantum world. In much the same way, **Bayesian Neural Networks** understand that data doesn’t provide absolute answers but rather points toward a **distribution of possibilities**. Embracing uncertainty allows for better predictions, especially in complex, unpredictable environments.
-
-This acceptance of uncertainty is a powerful lesson. In both science and life, when we stop clinging to certainty, we create space for growth, exploration, and discovery. It’s in the unknown that we often make our greatest breakthroughs — not just in AI, but in our understanding of the universe itself.
-
----
-
-#### **2. Existence as a Superposition of Possibilities: The Quantum Analogy**
-
-Imagine a universe in which every possibility exists simultaneously until it is observed. In quantum mechanics, this is the nature of **superposition**. A quantum system, like an electron, doesn’t have a single, fixed state. Instead, it exists in multiple potential states, each with a certain probability, and only "chooses" one when it is measured or observed. This phenomenon, a cornerstone of the Heisenberg Uncertainty Principle, implies that reality itself is not one fixed thing but a web of interconnected possibilities.
-
-Similarly, **Bayesian Neural Networks** operate in a state of superposition. Instead of producing a single, deterministic answer, **BNNs** maintain a distribution of possible outcomes. This distribution represents all the potential scenarios that could unfold given the current data, along with the uncertainty that surrounds each one. The more data the network receives, the more its predictions collapse into a single, more reliable outcome, akin to how the quantum system collapses into a definite state once observed.
-
-This concept of **existence as a superposition of possibilities** invites a new way of thinking about our reality and the AI models that interact with it. What if we stopped thinking about outcomes as fixed points? What if, instead of striving for certainty, we embraced the inherent fluidity of reality — a reality where multiple possibilities exist simultaneously, each with its own likelihood of becoming the "truth"?
-
-In AI, this perspective is incredibly valuable. When we acknowledge the superposition of possibilities, we open the door to more flexible, adaptable systems that are capable of handling uncertainty and complexity in a way traditional deterministic models cannot. This mindset change allows us to approach challenges from a place of openness, where multiple possibilities are always on the table.
-
----
-
 # Demystifying Hyperparameters in Bayesian Neural Networks
 
 Building a Bayesian Neural Network (BNN) can feel like venturing into uncharted waters. You tweak hyperparameters like epochs and learning rates, but sometimes the model improves without a clear understanding of why. If you've ever wondered why certain hyperparameters work better or worse in a BNN—and found yourself puzzled—you're not alone. This blog post aims to shed light on the mysterious world of hyperparameters in BNNs, exploring the challenges they present compared to traditional neural networks.
@@ -585,3 +552,37 @@ With the advent of powerful computing resources, Bayesian methods have become in
 The shift from inferential statistics to Bayesian statistics represents a significant paradigm shift. While inferential statistics focus on frequency-based probability and fixed parameters, Bayesian statistics embrace uncertainty and variability. Bayesian methods, in a sense, can be seen as a form of "brute-forcing" towards the convergence of a solution, leveraging computational power to explore the entire parameter space.
 
 This shift has been facilitated by the increased availability of significant computing power, which has made it feasible to perform the complex calculations required for Bayesian methods. As a result, Bayesian methods have found applications in a wide range of fields, from machine learning and artificial intelligence to social sciences and medicine.
+
+---
+
+### **Appendix: Additional Thought-Provoking Concepts**
+
+<table>
+  <tr>
+    <td><img src="https://media.licdn.com/dms/image/v2/C4D12AQGFqhw1IU8pzw/article-inline_image-shrink_400_744/article-inline_image-shrink_400_744/0/1614017680505?e=1734566400&v=beta&t=z7-sL1Mds1xA86vMmXMyxG92jc9VTvKks4aHVK5oru8" style="width: 100%;"/></td>
+    <td><img src="https://miro.medium.com/v2/resize:fit:1000/format:webp/1*-Haji114hoOypkf8zTeCYQ.jpeg" style="width: 100%;"/></td>
+  </tr>
+</table>
+
+---
+
+#### **1. The Heisenberg Uncertainty Principle: Embracing the Quantum Unknown**
+
+In a world driven by data and predictability, uncertainty is often seen as something to minimize or eliminate. The goal in traditional machine learning models is to optimize and reduce the error, ensuring that the model provides the most confident, deterministic predictions. However, in the context of **Bayesian Neural Networks**, uncertainty isn't something to fear, but something to **embrace**. When we acknowledge uncertainty, we open ourselves up to more informed, nuanced decision-making.
+
+In quantum mechanics, **uncertainty** is intrinsic — particles do not behave according to fixed rules. This is encapsulated in the **Heisenberg Uncertainty Principle**, which states that the position and momentum of a particle cannot both be precisely measured at the same time. Rather, their behavior is probabilistic. Electrons exist in **superposition**, a state where they occupy multiple possibilities at once, only collapsing into a single state when observed. This is not a flaw but an inherent feature of the quantum world. In much the same way, **Bayesian Neural Networks** understand that data doesn’t provide absolute answers but rather points toward a **distribution of possibilities**. Embracing uncertainty allows for better predictions, especially in complex, unpredictable environments.
+
+This acceptance of uncertainty is a powerful lesson. In both science and life, when we stop clinging to certainty, we create space for growth, exploration, and discovery. It’s in the unknown that we often make our greatest breakthroughs — not just in AI, but in our understanding of the universe itself.
+
+---
+
+#### **2. Existence as a Superposition of Possibilities: The Quantum Analogy**
+
+Imagine a universe in which every possibility exists simultaneously until it is observed. In quantum mechanics, this is the nature of **superposition**. A quantum system, like an electron, doesn’t have a single, fixed state. Instead, it exists in multiple potential states, each with a certain probability, and only "chooses" one when it is measured or observed. This phenomenon, a cornerstone of the Heisenberg Uncertainty Principle, implies that reality itself is not one fixed thing but a web of interconnected possibilities.
+
+Similarly, **Bayesian Neural Networks** operate in a state of superposition. Instead of producing a single, deterministic answer, **BNNs** maintain a distribution of possible outcomes. This distribution represents all the potential scenarios that could unfold given the current data, along with the uncertainty that surrounds each one. The more data the network receives, the more its predictions collapse into a single, more reliable outcome, akin to how the quantum system collapses into a definite state once observed.
+
+This concept of **existence as a superposition of possibilities** invites a new way of thinking about our reality and the AI models that interact with it. What if we stopped thinking about outcomes as fixed points? What if, instead of striving for certainty, we embraced the inherent fluidity of reality — a reality where multiple possibilities exist simultaneously, each with its own likelihood of becoming the "truth"?
+
+In AI, this perspective is incredibly valuable. When we acknowledge the superposition of possibilities, we open the door to more flexible, adaptable systems that are capable of handling uncertainty and complexity in a way traditional deterministic models cannot. This mindset change allows us to approach challenges from a place of openness, where multiple possibilities are always on the table.
+
