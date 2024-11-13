@@ -438,6 +438,8 @@ Bayesian Neural Networks (BNNs) are particularly useful in applications where un
 
 # Demystifying Hyperparameters in Bayesian Neural Networks
 
+![](meme.jpg)
+
 Building a Bayesian Neural Network (BNN) can feel like venturing into uncharted waters. You tweak hyperparameters like epochs and learning rates, but sometimes the model improves without a clear understanding of why. If you've ever wondered why certain hyperparameters work better or worse in a BNN—and found yourself puzzled—you're not alone. This blog post aims to shed light on the mysterious world of hyperparameters in BNNs, exploring the challenges they present compared to traditional neural networks.
 
 **What Are Bayesian Neural Networks?**
