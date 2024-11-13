@@ -489,11 +489,27 @@ In BNNs, these hyperparameters play a significant role in how the model learns t
 
 **Challenges of BNNs Compared to Traditional Neural Networks**
 
+ In the provided code, the loss function used is `nn.BCEWithLogitsLoss()`. This is a more complex loss function compared to something like Mean Squared Error (MSE) often used in traditional neural networks.
+
+`nn.BCEWithLogitsLoss()` combines a `Sigmoid` layer and the `BCELoss` (Binary Cross Entropy Loss) in one single class. This version is more numerically stable than using a plain `Sigmoid` followed by a `BCELoss` as, by combining the operations into one layer, we take advantage of the log-sum-exp trick for numerical stability.
+
+The `BCEWithLogitsLoss` computes the loss between the target and the output logits from the network. This is suitable for binary classification problems like the sentiment analysis problem in the provided code. The output of the network is expected to be the raw, unnormalized scores for each class, also known as logits.
+
+In the context of Bayesian Neural Networks (BNNs), the complexity arises from the fact that we are not just optimizing fixed parameters, but we are learning a distribution of parameters. This involves a more complex process of updating beliefs about the parameters as more data is observed, which is inherently a more complex optimization problem. 
+
 1. **Complexity of the Loss Function**: BNNs often use more complex loss functions that involve probabilistic components, making optimization trickier.
 
 2. **Computational Overhead**: Sampling from distributions adds computational complexity, leading to longer training times.
 
 3. **Stochasticity**: The inherent randomness in BNNs can make the training process less predictable.
+
+Stochasticity refers to the inherent randomness in the training process. In BNNs, this randomness comes from two main sources:
+
+1. **Random Weight Initialization**: Weights in neural networks are often initialized randomly, which affects the starting point of the optimization process. This is also true for BNNs.
+
+2. **Dropout during Training and Prediction**: In the provided code, dropout is used during both training and prediction (inference). Dropout randomly sets a fraction of input units to 0 at each update during training time, which helps prevent overfitting. This is a form of model complexity control. During prediction, dropout is used to obtain a Monte Carlo approximation of the predictive distribution, introducing additional randomness.
+
+This inherent randomness means that even with the same hyperparameters, two training runs can yield different results. This is why BNNs are often seen as less predictable compared to traditional deterministic neural networks. However, this stochasticity also allows BNNs to capture and quantify uncertainty, which is a key advantage of Bayesian methods.
 
 **Understanding Stochasticity in BNNs**
 
